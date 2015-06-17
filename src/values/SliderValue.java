@@ -5,7 +5,7 @@ public class SliderValue<Number> implements Value<Number> {
 	private String parameterName;
 	private Number value;
 	
-	public SliderValue(Number value, String parameterName) {
+	public SliderValue(String parameterName, Number value) {
 		this.value = value;
 		this.parameterName = parameterName;
 	}

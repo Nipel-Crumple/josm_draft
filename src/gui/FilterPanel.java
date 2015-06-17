@@ -38,7 +38,7 @@ class FilterPanel extends JPanel {
 			System.out.println("TYPE equals to " + type);
 
 			addSliderTitle(json.getString("title"));
-			Hashtable<Integer, JLabel> labelTable = new Hashtable();
+			Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
 			
 			JsonArray array = json.getJsonArray("scale");
 			String valueType = json.getString("value_type");
@@ -118,7 +118,5 @@ class FilterPanel extends JPanel {
 		sliderLabel.setVisible(true);
 
 		this.add(sliderLabel);
-	}
-
-	
+	}	
 }

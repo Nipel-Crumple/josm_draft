@@ -12,14 +12,14 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 	
 //	private static final String name = "UnsharpMaskListener";
 	private StateChangeListener handler;
-    private JsonObject filterState;
+    private FilterModel filterState;
     
     public FilterGuiListener(StateChangeListener handler) {
     	this.handler = handler;
     }
     
-    public void setFilterState(JsonObject json) {
-    	this.filterState = json;
+    public void setFilterState(FilterModel state) {
+    	this.filterState = state;
     }
 
 	@Override
@@ -27,7 +27,7 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		
 		JSlider slider = (JSlider) e.getSource();
 		
-		System.out.println("filter state before " + filterState.toString());
+//		System.out.println("filter state before " + filterState.toString());
 		
 		if (!slider.getValueIsAdjusting()) {
 			slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
@@ -35,19 +35,14 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		
 		System.out.println("Slider " + slider.getName());
 		
-		if (filterState.containsKey(slider.getName())) {
-		}
-		System.out.println("filter state after " + filterState.toString());
-//		JsonObject json = Json.createObjectBuilder()
-//				.add(slider.getName(), slider.getValue())
-//				.build();
-//		System.out.println(json.toString());
+//		System.out.println("filter state after " + filterState.toString());
+		
 		//notify about state is changed now so send msg to FiltersManager
 		handler.filterStateChanged(filterState);
 	}
 
 	@Override
-	public JsonObject getState() {
+	public FilterModel getState() {
 		//encoding new filter's state info to json for sending
 		return filterState;
 	}
