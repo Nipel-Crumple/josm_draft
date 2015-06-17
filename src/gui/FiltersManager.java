@@ -4,12 +4,19 @@ import io.FilterReader;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+
+import values.Value;
 
 class FiltersManager implements StateChangeListener {
 	
@@ -62,8 +69,24 @@ class FiltersManager implements StateChangeListener {
 	@Override
 	public void filterStateChanged(FilterModel model) {
 		// create json msg for sending to all instances of filters
-//		System.out.println("filter state was changed to " + json.toString());
-	}
+		Map<String, Value<?>> map = model.getParams();
+		JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
+		for (Entry<String, Value<?>> entry : map.entrySet()) {
+			Number value = (Number) entry.getValue().getValue();
+			if (value instanceof Double) {
+				jsonBuilder.add(entry.getKey(), Json.createObjectBuilder()
+						.add("value", value.doubleValue())
+						.build());
+			} else if (value instanceof Integer) {
+				jsonBuilder.add(entry.getKey(), Json.createObjectBuilder()
+						.add("value", value.intValue())
+						.build());
+			}
+		}
+		
+		JsonObject jsonToSend = jsonBuilder.build();
+		System.out.println(jsonToSend.toString());
+	}	
 
 	
 }
