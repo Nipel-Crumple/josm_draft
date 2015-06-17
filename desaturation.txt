@@ -1,0 +1,14 @@
+{
+		"name" : "desaturation",
+		"title" : "Desaturation",
+		"controls" : [
+				{
+					"type": "checkbox",
+		            "name": "desaturate",
+		            "title": "Desaturate",
+					"value_type": "boolean",
+					"default": "false",
+					"decoration": "none"
+				}
+		]
+}

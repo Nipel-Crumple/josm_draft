@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_80"/>
+	<classpathentry kind="lib" path="C:/Users/Johnny D/Downloads/org.json-20120521.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Johnny D/Downloads/javax.json-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Johnny D/Downloads/javax.json-1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Johnny D/Downloads/javax.json-api-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Johnny D/Downloads/javax.json-api-1.0-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
