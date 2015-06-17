@@ -22,7 +22,7 @@ class FiltersManager implements StateChangeListener {
 		
 		//reading metainf from file
 		FilterReader fr = new FilterReader();
-		String fileName = "sharpen.txt";
+		String fileName = "meta-inf/sharpen.txt";
 		JsonObject obj = fr.readMetaInf(fileName);
 		
 		//listener to track sliders and checkbox of creating filter
