@@ -2,8 +2,11 @@ package gui;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 import values.SliderValue;
 import values.Value;
@@ -44,5 +47,23 @@ public class FilterModel {
 			SliderValue<Integer> value = new SliderValue<>(parameterName, defaultValue);
 			params.put(parameterName, value);
 		}
+	}
+	
+	public JsonObject encodeJson() {
+		JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
+		for (Entry<String, Value<?>> entry : params.entrySet()) {
+			Number value = (Number) entry.getValue().getValue();
+			if (value instanceof Double) {
+				jsonBuilder.add(entry.getKey(), Json.createObjectBuilder()
+						.add("value", value.doubleValue())
+						.build());
+			} else if (value instanceof Integer) {
+				jsonBuilder.add(entry.getKey(), Json.createObjectBuilder()
+						.add("value", value.intValue())
+						.build());
+			}
+		}
+		
+		return jsonBuilder.build();
 	}
 }

@@ -69,23 +69,7 @@ class FiltersManager implements StateChangeListener {
 	@Override
 	public void filterStateChanged(FilterModel model) {
 		// create json msg for sending to all instances of filters
-		Map<String, Value<?>> map = model.getParams();
-		JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
-		for (Entry<String, Value<?>> entry : map.entrySet()) {
-			Number value = (Number) entry.getValue().getValue();
-			if (value instanceof Double) {
-				jsonBuilder.add(entry.getKey(), Json.createObjectBuilder()
-						.add("value", value.doubleValue())
-						.build());
-			} else if (value instanceof Integer) {
-				jsonBuilder.add(entry.getKey(), Json.createObjectBuilder()
-						.add("value", value.intValue())
-						.build());
-			}
-		}
-		
-		JsonObject jsonToSend = jsonBuilder.build();
-		System.out.println(jsonToSend.toString());
+		// here we should call the method encodeJson() from model
 	}	
 
 	

@@ -39,11 +39,6 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		
 		String parameterName = slider.getName();
 		
-		for (Entry<String, Value<?>> entry : filterState.getParams().entrySet()) {
-			System.out.println("PRINTING" + entry.getKey().toString() + " " + entry.getValue().getValue());
-		}
-		System.out.println();
-		
 		if (filterState.getParams().containsKey(parameterName)) {
 			SliderValue<Number> value = (SliderValue<Number>) filterState.getParams().get(parameterName);
 			if (value.isDouble()) {
@@ -54,10 +49,6 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 			filterState.getParams().put(parameterName, value);
 		}
 		
-		for (Entry<String, Value<?>> entry : filterState.getParams().entrySet()) {
-			System.out.println("PRINTING" + entry.getKey() + " " + entry.getValue().getValue());
-		}
-		System.out.println();
 		//notify about state is changed now so send msg to FiltersManager
 		handler.filterStateChanged(filterState);
 	}
