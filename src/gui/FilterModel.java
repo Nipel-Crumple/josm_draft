@@ -14,9 +14,9 @@ import values.Value;
 public class FilterModel {
 	
 	private Map<String, Value<?>> params = new HashMap<>();
-	private String filterName;
+	private String filterClass;
 	
-	public FilterModel(){ 
+	public FilterModel() { 
 		
 	}
 	
@@ -24,12 +24,12 @@ public class FilterModel {
 		return params;
 	}
 	
-	public String getFilterName() {
-		return filterName;
+	public String getFilterClass() {
+		return filterClass;
 	}
 	
-	public void setFilterName(String filterName) {
-		this.filterName = filterName;
+	public void setFilterClass(String filterClass) {
+		this.filterClass = filterClass;
 	}
 	
 	public void addParams(JsonObject json) {
@@ -37,7 +37,7 @@ public class FilterModel {
 		String valueType = json.getString("value_type");
 		
 		// setting up the beginning state of filter 
-		// according to his metainfo
+		// according to its metainfo
 		if (valueType.equals("float")) {
 			double defaultValue =  json.getJsonNumber("default").doubleValue();
 			SliderValue<Double> value = new SliderValue<>(parameterName, defaultValue);

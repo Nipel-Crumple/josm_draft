@@ -1,4 +1,5 @@
 {
+		"class":"filters.UnsharpMaskFilter",
         "name":"sharpen",
         "title": "Sharpen / Contrast",
         "controls": [

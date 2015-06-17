@@ -5,6 +5,7 @@ import java.awt.event.ItemListener;
 import java.util.Map.Entry;
 
 import javax.json.JsonObject;
+import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -58,10 +59,9 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		//encoding new filter's state info to json for sending
 		return filterState;
 	}
-	
+
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 }

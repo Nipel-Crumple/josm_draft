@@ -1,22 +1,16 @@
 package gui;
 
+import filters.Filter;
 import io.FilterReader;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonNumber;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-
-import values.Value;
 
 class FiltersManager implements StateChangeListener {
 	
@@ -33,15 +27,16 @@ class FiltersManager implements StateChangeListener {
 		
 		//listener to track sliders and checkbox of creating filter
 		FilterGuiListener filterListener = new FilterGuiListener(this);
-		String filterName = obj.getString("name");
+		String filterClass = obj.getString("class");
 		
-		this.states.put(filterName, filterListener);
+		states.put(filterClass, filterListener);
 		
 		// creating model of the filter
 		FilterModel filter = new FilterModel();
-		filter.setFilterName(filterName);
+		filter.setFilterClass(filterClass);
 
 		JCheckBox checkBox = fp.addFilterLabel(obj.getString("title"));
+		checkBox.setName(obj.getString("name"));
 		checkBox.addItemListener(filterListener);
 		fp.add(checkBox);
 		
@@ -70,7 +65,24 @@ class FiltersManager implements StateChangeListener {
 	public void filterStateChanged(FilterModel model) {
 		// create json msg for sending to all instances of filters
 		// here we should call the method encodeJson() from model
+		Filter filterToChange = null;
+		try {
+			filterToChange = (Filter) Class.forName(model.getFilterClass()).newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		JsonObject jsonNewState = model.encodeJson();
+		
+		// TODO: check if this method returns false
+		filterToChange.changeFilterState(jsonNewState);
 	}	
 
-	
 }
