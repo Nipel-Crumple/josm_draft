@@ -21,7 +21,8 @@ class FiltersManager implements StateChangeListener {
 		
 		//reading metainf from file
 		FilterReader fr = new FilterReader();
-		JsonObject obj = fr.readMetaInf();
+		String fileName = "sharpen.txt";
+		JsonObject obj = fr.readMetaInf(fileName);
 		
 		//listener to track sliders and checkbox of creating filter
 		FilterGuiListener filterListener = new FilterGuiListener(this);
@@ -56,10 +57,10 @@ class FiltersManager implements StateChangeListener {
 	}
 
 	/**
-	 * @param json - json that contains info about filter which was changed
+	 * @param model - model that contains info about filter which was changed
 	 */
 	@Override
-	public void filterStateChanged(FilterModel json) {
+	public void filterStateChanged(FilterModel model) {
 		// create json msg for sending to all instances of filters
 //		System.out.println("filter state was changed to " + json.toString());
 	}

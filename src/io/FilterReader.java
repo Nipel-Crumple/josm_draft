@@ -13,9 +13,9 @@ import javax.json.JsonReader;
 
 public class FilterReader {
 
-	public JsonObject readMetaInf() {
+	public JsonObject readMetaInf(String fileName) {
 		// reading filters meta-INFO from file
-		File file = new File("sharpen.txt");
+		File file = new File(fileName);
 		StringBuilder stringBuilder = new StringBuilder();
 		String json = null;
 		FileReader fileReader = null;

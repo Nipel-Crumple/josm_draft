@@ -29,4 +29,10 @@ public class SliderValue<Number> implements Value<Number> {
 	public void setParameterName(String name) {
 		this.parameterName = name;;
 	}
+	
+	public boolean isDouble() {
+		if (value instanceof Double) 
+			return true;
+		return false;
+	}
 }

@@ -2,11 +2,15 @@ package gui;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Map.Entry;
 
 import javax.json.JsonObject;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import values.SliderValue;
+import values.Value;
 
 public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener {
 	
@@ -33,10 +37,27 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 			slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
 		}
 		
-		System.out.println("Slider " + slider.getName());
+		String parameterName = slider.getName();
 		
-//		System.out.println("filter state after " + filterState.toString());
+		for (Entry<String, Value<?>> entry : filterState.getParams().entrySet()) {
+			System.out.println("PRINTING" + entry.getKey().toString() + " " + entry.getValue().getValue());
+		}
+		System.out.println();
 		
+		if (filterState.getParams().containsKey(parameterName)) {
+			SliderValue<Number> value = (SliderValue<Number>) filterState.getParams().get(parameterName);
+			if (value.isDouble()) {
+				value.setValue((double) slider.getValue() / 100);
+			} else {
+				value.setValue(slider.getValue());
+			}
+			filterState.getParams().put(parameterName, value);
+		}
+		
+		for (Entry<String, Value<?>> entry : filterState.getParams().entrySet()) {
+			System.out.println("PRINTING" + entry.getKey() + " " + entry.getValue().getValue());
+		}
+		System.out.println();
 		//notify about state is changed now so send msg to FiltersManager
 		handler.filterStateChanged(filterState);
 	}
