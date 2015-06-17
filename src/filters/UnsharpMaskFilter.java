@@ -60,13 +60,13 @@ public class UnsharpMaskFilter implements Filter {
 	@Override
 	public String toString() {
 		JsonObject json = Json.createObjectBuilder()
-							.add("amount", Json.createObjectBuilder()
-									.add("value", amount)
-									.build())
-							.add("size", Json.createObjectBuilder()
-									.add("value", size)
-									.build())
-							.build();
+			.add("amount", Json.createObjectBuilder()
+					.add("value", amount)
+					.build())
+			.add("size", Json.createObjectBuilder()
+					.add("value", size)
+					.build())
+			.build();
 		return json.toString();
 	}
 }

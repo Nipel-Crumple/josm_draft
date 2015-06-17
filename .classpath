@@ -2,11 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_80"/>
-	<classpathentry kind="lib" path="C:/Users/Johnny D/Downloads/javax.json-1.0.jar" sourcepath="C:/Users/Johnny D/Downloads/javax.json-1.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/Johnny%20D/Downloads/javax.json-1.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="W:/GSOC2015/Filters/dist/Filters.jar"/>
+	<classpathentry kind="lib" path="lib/Filters.jar"/>
+	<classpathentry kind="lib" path="lib/javax.json-1.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/javax.json-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
