@@ -3,12 +3,15 @@ package gui;
 import filters.Filter;
 import io.FilterReader;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
@@ -16,18 +19,13 @@ class FiltersManager implements StateChangeListener {
 	
 	private Map<String, FilterStateOwner> states = new HashMap<>();
 	
-	public JPanel createFilterGUI() {
+	private JPanel createFilterGUI(JsonObject meta) {
 		
 		FilterPanel fp = new FilterPanel();
 		
-		//reading metainf from file
-		FilterReader fr = new FilterReader();
-		String fileName = "meta-inf/sharpen.txt";
-		JsonObject obj = fr.readMetaInf(fileName);
-		
 		//listener to track sliders and checkbox of creating filter
 		FilterGuiListener filterListener = new FilterGuiListener(this);
-		String filterClass = obj.getString("class");
+		String filterClass = meta.getString("class");
 		
 		states.put(filterClass, filterListener);
 		
@@ -35,22 +33,28 @@ class FiltersManager implements StateChangeListener {
 		FilterModel filter = new FilterModel();
 		filter.setFilterClass(filterClass);
 
-		JCheckBox checkBox = fp.addFilterLabel(obj.getString("title"));
-		checkBox.setName(obj.getString("name"));
+		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
+		checkBox.setName(meta.getString("name"));
 		checkBox.addItemListener(filterListener);
 		fp.add(checkBox);
 		
-		JsonArray controls = obj.getJsonArray("controls");
+		JsonArray controls = meta.getJsonArray("controls");
 		
 		for (int i = 0; i < controls.size(); i++) {
 			JsonObject temp = controls.getJsonObject(i);
-			JSlider slider = fp.addSlider(temp);
-			slider.addChangeListener(filterListener);
+			JComponent component = fp.addGuiElement(temp);
+			if (component != null) {
+				if (component instanceof JSlider) {
+					((JSlider) component).addChangeListener(filterListener);
+				} else if (component instanceof JCheckBox) {
+//					((JCheckBox) component).addItemListener(filterListener);
+				}
+				// adding parameters to the filter instance
+				filter.addParams(temp);
+				
+				fp.add(component);
+			}
 			
-			// adding parameters to the filter instance
-			filter.addParams(temp);
-			
-			fp.add(slider);
 		}
 		
 		filterListener.setFilterState(filter);
@@ -58,6 +62,22 @@ class FiltersManager implements StateChangeListener {
 		return fp;
 	}
 
+	public List<JPanel> createFilterPanels() {
+		
+		List<JPanel> filterPanels = new ArrayList<>();
+		String dir = "meta-inf";
+
+		//reading metainf from file
+		FilterReader fr = new FilterReader();
+		
+		List<JsonObject> filtersMeta = fr.readMetaInf(dir);
+		
+		for (JsonObject json : filtersMeta) {
+			filterPanels.add(createFilterGUI(json));
+		}
+		
+		return filterPanels;
+	}
 	/**
 	 * @param model - model that contains info about filter which was changed
 	 */

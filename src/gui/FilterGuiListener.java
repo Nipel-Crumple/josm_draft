@@ -32,8 +32,6 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		
 		JSlider slider = (JSlider) e.getSource();
 		
-//		System.out.println("filter state before " + filterState.toString());
-		
 		if (!slider.getValueIsAdjusting()) {
 			slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
 		}

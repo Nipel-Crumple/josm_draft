@@ -11,6 +11,7 @@ import javax.json.JsonObject;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -29,14 +30,12 @@ class FilterPanel extends JPanel {
 		setBackground(Color.white);
 	}
 
-	public JSlider addSlider(JsonObject json) {
+	public JComponent addGuiElement(JsonObject json) {
 		Border sliderBorder = new EmptyBorder(10, 20, 10, 20);
 		String type = json.getString("type");
-		JSlider slider = null;
-
+		
 		if (type.equals("linear_slider")) {
-			System.out.println("TYPE equals to " + type);
-
+			JSlider slider = null;
 			addSliderTitle(json.getString("title"));
 			Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
 			
@@ -60,7 +59,6 @@ class FilterPanel extends JPanel {
 				double delta = (maxValue - minValue) / 100;
 				for (int i = 0; i <= maxValue; i++) {
 					if ((i % 20) == 0) {
-						System.out.println(i*delta / 100);
 						labelTable.put(new Integer(i), new JLabel(String.valueOf(i * delta / 100)));
 					}
 				}
@@ -84,11 +82,12 @@ class FilterPanel extends JPanel {
 			slider.setVisible(true);
 			
 			this.add(slider);
+			return slider;
 		} else if (type.equals("checkbox")) {
-			System.out.println("TYPE equals to " + type);
+//			return addFilterLabel(json.getString("title"));
+			return null;
 		}
-		
-		return slider;
+		return null;
 	}
 
 	public JCheckBox addFilterLabel(String labelText) {

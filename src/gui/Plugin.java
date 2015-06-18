@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,7 +26,10 @@ public class Plugin {
 		FiltersManager fm = new FiltersManager();
 		topPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		topPanel.setPreferredSize(new Dimension(610, 900));
-		topPanel.add(fm.createFilterGUI());
+		List<JPanel> panels = fm.createFilterPanels();
+		for (JPanel panel : panels) {
+			topPanel.add(panel);
+		}
 
 		frame.setContentPane(topPanel);
 		frame.pack();
