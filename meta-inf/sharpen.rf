@@ -1,5 +1,6 @@
 {
-		"class":"filters.UnsharpMaskFilter",
+		"classname":"filters.UnsharpMaskFilter",
+		"binaries":["lib/unsharpmask.jar"],
         "name":"sharpen",
         "title": "Sharpen / Contrast",
         "controls": [

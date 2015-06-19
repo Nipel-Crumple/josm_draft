@@ -14,7 +14,7 @@ import values.Value;
 public class FilterModel {
 	
 	private Map<String, Value<?>> params = new HashMap<>();
-	private String filterClass;
+	private String filterClassName;
 	
 	public FilterModel() { 
 		
@@ -24,12 +24,12 @@ public class FilterModel {
 		return params;
 	}
 	
-	public String getFilterClass() {
-		return filterClass;
+	public String getFilterClassName() {
+		return filterClassName;
 	}
 	
-	public void setFilterClass(String filterClass) {
-		this.filterClass = filterClass;
+	public void setFilterClass(String filterClassName) {
+		this.filterClassName = filterClassName;
 	}
 	
 	public void addParams(JsonObject json) {

@@ -8,8 +8,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -21,6 +23,9 @@ import javax.swing.JSlider;
 class FiltersManager implements StateChangeListener {
 	
 	private Map<String, FilterStateOwner> states = new HashMap<>();
+	private Map<String, JsonObject> filtersWithMeta = new HashMap<>();
+	private Set<URL> urls = new HashSet<>();
+	private ClassLoader loader;
 	
 	private JPanel createFilterGUI(JsonObject meta) {
 		
@@ -28,13 +33,13 @@ class FiltersManager implements StateChangeListener {
 		
 		//listener to track sliders and checkbox of creating filter
 		FilterGuiListener filterListener = new FilterGuiListener(this);
-		String filterClass = meta.getString("class");
+		String filterClassName = meta.getString("classname");
 		
-		states.put(filterClass, filterListener);
+		states.put(filterClassName, filterListener);
 		
 		// creating model of the filter
 		FilterModel filter = new FilterModel();
-		filter.setFilterClass(filterClass);
+		filter.setFilterClass(filterClassName);
 
 		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
 		checkBox.setName(meta.getString("name"));
@@ -76,6 +81,18 @@ class FiltersManager implements StateChangeListener {
 		List<JsonObject> filtersMeta = fr.readMetaInf(dir);
 		
 		for (JsonObject json : filtersMeta) {
+			filtersWithMeta.put(json.getString("name"), json);
+			
+			JsonArray binaries = json.getJsonArray("binaries");
+			for (int i = 0; i < binaries.size(); i++) {
+				try {
+					urls.add(new URL("jar:file:" + binaries.getString(i) + "!/"));
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			loader = new URLClassLoader(urls.toArray(new URL[urls.size()]));
 			filterPanels.add(createFilterGUI(json));
 		}
 		
@@ -90,9 +107,8 @@ class FiltersManager implements StateChangeListener {
 		// here we should call the method encodeJson() from model
 		Filter filterToChange = null;
 		try {
-			URL url = new URL("jar:file:lib/unsharpmask.jar!/");
-			ClassLoader loader = URLClassLoader.newInstance(new URL[] {url});
-			Class<?> clazz = loader.loadClass("filters.UnsharpMaskFilter");
+			
+			Class<?> clazz = loader.loadClass(model.getFilterClassName());
 			filterToChange = (Filter) clazz.newInstance();
 //			filterToChange = (Filter) Class.forName(model.getFilterClass()).newInstance();
 		} catch (InstantiationException e) {
@@ -102,9 +118,6 @@ class FiltersManager implements StateChangeListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

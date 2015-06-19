@@ -2,16 +2,12 @@ package gui;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Map.Entry;
 
-import javax.json.JsonObject;
-import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import values.SliderValue;
-import values.Value;
 
 public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener {
 	
