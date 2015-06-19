@@ -104,7 +104,7 @@ class FilterPanel extends JPanel {
 		return checkLabel;
 	}
 
-	public void addSliderTitle(String labelText) {
+	private void addSliderTitle(String labelText) {
 		Border labelBorder = new EmptyBorder(15, 20, 0, 0);
 		Font labelFont = new Font("Arial", Font.PLAIN, 14);
 

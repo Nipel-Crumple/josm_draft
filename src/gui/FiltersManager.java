@@ -3,6 +3,9 @@ package gui;
 import filters.Filter;
 import io.FilterReader;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +90,11 @@ class FiltersManager implements StateChangeListener {
 		// here we should call the method encodeJson() from model
 		Filter filterToChange = null;
 		try {
-			filterToChange = (Filter) Class.forName(model.getFilterClass()).newInstance();
+			URL url = new URL("jar:file:lib/unsharpmask.jar!/");
+			ClassLoader loader = URLClassLoader.newInstance(new URL[] {url});
+			Class<?> clazz = loader.loadClass("filters.UnsharpMaskFilter");
+			filterToChange = (Filter) clazz.newInstance();
+//			filterToChange = (Filter) Class.forName(model.getFilterClass()).newInstance();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,6 +102,9 @@ class FiltersManager implements StateChangeListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

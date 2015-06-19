@@ -1,7 +1,5 @@
 package filters;
 
-import java.util.EventListener;
-
 import javax.json.JsonObject;
 
 public interface Filter{
