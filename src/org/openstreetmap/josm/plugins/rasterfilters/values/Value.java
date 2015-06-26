@@ -1,4 +1,4 @@
-package values;
+package org.openstreetmap.josm.plugins.rasterfilters.values;
 
 public interface Value<T extends Object> {
 	

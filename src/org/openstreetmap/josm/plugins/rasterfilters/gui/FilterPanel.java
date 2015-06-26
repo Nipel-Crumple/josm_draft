@@ -1,4 +1,4 @@
-package gui;
+package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -24,8 +24,9 @@ class FilterPanel extends JPanel {
 
 	public FilterPanel() {
 		super();
-		setPreferredSize(new Dimension(600, 300));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		setMaximumSize(new Dimension(600, 400));
+		setAlignmentX(Component.CENTER_ALIGNMENT);
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setBackground(Color.white);
 	}

@@ -1,4 +1,4 @@
-package filters;
+package org.openstreetmap.josm.plugins.rasterfilters.filters;
 
 import javax.json.Json;
 import javax.json.JsonObject;

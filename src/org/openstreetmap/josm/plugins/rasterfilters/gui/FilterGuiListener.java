@@ -1,4 +1,4 @@
-package gui;
+package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -7,7 +7,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import values.SliderValue;
+import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 
 public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener {
 	

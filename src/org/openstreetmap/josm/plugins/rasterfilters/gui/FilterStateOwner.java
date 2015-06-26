@@ -1,4 +1,4 @@
-package gui;
+package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 public interface FilterStateOwner {
 	

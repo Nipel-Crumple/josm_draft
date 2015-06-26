@@ -1,7 +1,4 @@
-package gui;
-
-import filters.Filter;
-import io.FilterReader;
+package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,10 +17,15 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.rasterfilters.filters.Filter;
+import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
+
 class FiltersManager implements StateChangeListener {
 	
 	private Map<String, FilterStateOwner> states = new HashMap<>();
 	private Map<String, JsonObject> filtersWithMeta = new HashMap<>();
+	private List<String> filterTitles = new ArrayList<>();
 	private Set<URL> urls = new HashSet<>();
 	private ClassLoader loader;
 	
@@ -34,12 +36,14 @@ class FiltersManager implements StateChangeListener {
 		//listener to track sliders and checkbox of creating filter
 		FilterGuiListener filterListener = new FilterGuiListener(this);
 		String filterClassName = meta.getString("classname");
+		String filterTitle = meta.getString("title");
 		
 		states.put(filterClassName, filterListener);
-		
+		filterTitles.add(filterTitle);
+		System.out.println(filterTitle);
 		// creating model of the filter
 		FilterModel filter = new FilterModel();
-		filter.setFilterClass(filterClassName);
+		filter.setFilterClassName(filterClassName);
 
 		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
 		checkBox.setName(meta.getString("name"));
@@ -66,14 +70,14 @@ class FiltersManager implements StateChangeListener {
 		}
 		
 		filterListener.setFilterState(filter);
-		
+//		fp.setVisible(false);
 		return fp;
 	}
 
 	public List<JPanel> createFilterPanels() {
 		
 		List<JPanel> filterPanels = new ArrayList<>();
-		String dir = "meta-inf";
+		String dir = "plugins/rasterfilters/meta-inf";
 
 		//reading metainf from file
 		FilterReader fr = new FilterReader();
@@ -87,6 +91,7 @@ class FiltersManager implements StateChangeListener {
 			for (int i = 0; i < binaries.size(); i++) {
 				try {
 					urls.add(new URL("jar:file:" + binaries.getString(i) + "!/"));
+					Main.debug(new URL("jar:file:/./" + binaries.getString(i) + "!/").toString());
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -107,9 +112,10 @@ class FiltersManager implements StateChangeListener {
 		// here we should call the method encodeJson() from model
 		Filter filterToChange = null;
 		try {
-			
-			Class<?> clazz = loader.loadClass(model.getFilterClassName());
-			filterToChange = (Filter) clazz.newInstance();
+			// TODO: this is the temporary decision, need to load classes not here
+//			Class<?> clazz = loader.loadClass(model.getFilterClassName());
+//			filterToChange = (Filter) clazz.newInstance();
+			filterToChange = (Filter) Class.forName(model.getFilterClassName(), true, loader).newInstance();
 //			filterToChange = (Filter) Class.forName(model.getFilterClass()).newInstance();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
@@ -127,5 +133,9 @@ class FiltersManager implements StateChangeListener {
 		// TODO: check if this method returns false
 		filterToChange.changeFilterState(jsonNewState);
 	}	
+	
+	public List<String> getFilterTitles() {
+		return filterTitles;
+	}
 
 }

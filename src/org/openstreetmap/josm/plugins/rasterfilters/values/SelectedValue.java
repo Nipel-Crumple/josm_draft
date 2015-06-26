@@ -1,4 +1,4 @@
-package values;
+package org.openstreetmap.josm.plugins.rasterfilters.values;
 
 public class SelectedValue<T> implements Value<T> {
 

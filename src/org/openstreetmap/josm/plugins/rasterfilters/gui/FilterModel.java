@@ -1,4 +1,4 @@
-package gui;
+package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +8,8 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
-import values.SliderValue;
-import values.Value;
+import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
+import org.openstreetmap.josm.plugins.rasterfilters.values.Value;
 
 public class FilterModel {
 	
@@ -28,7 +28,7 @@ public class FilterModel {
 		return filterClassName;
 	}
 	
-	public void setFilterClass(String filterClassName) {
+	public void setFilterClassName(String filterClassName) {
 		this.filterClassName = filterClassName;
 	}
 	

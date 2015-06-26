@@ -1,4 +1,4 @@
-package io;
+package org.openstreetmap.josm.plugins.rasterfilters.io;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,6 +16,8 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import org.openstreetmap.josm.Main;
+
 public class FilterReader {
 
 	public List<JsonObject> readMetaInf(String dir) {
@@ -24,7 +26,7 @@ public class FilterReader {
 
 		File[] files = findAllMeta(directory);
 		
-		System.out.println("LENGTH " + files.length);
+		Main.debug("LENGTH " + files.length);
 		
 		List<JsonObject> filtersMeta = new ArrayList<>();
 
@@ -63,6 +65,7 @@ public class FilterReader {
 	}
 
 	public File[] findAllMeta(File directory) {
+		Main.debug(directory.getAbsolutePath());
 		if (directory.isDirectory()) {
 			FileFilter filter = new FileFilter() {
 				@Override
