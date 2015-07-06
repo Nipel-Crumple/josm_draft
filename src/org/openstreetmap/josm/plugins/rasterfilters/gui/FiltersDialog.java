@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Window;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -23,7 +24,7 @@ import javax.swing.border.EmptyBorder;
 
 public class FiltersDialog {
 
-	public JFrame createAndShowGUI() {
+	public JFrame createAndShowGUI() throws MalformedURLException {
 		JFrame frame = new JFrame("Filters");
 		
 		JPanel pane = new JPanel();

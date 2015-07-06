@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.rasterfilters;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -49,7 +50,12 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-    	dialog.createAndShowGUI();
+    	try {
+			dialog.createAndShowGUI();
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 
     @Override
