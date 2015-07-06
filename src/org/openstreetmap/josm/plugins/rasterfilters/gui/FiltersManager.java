@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -74,7 +76,7 @@ class FiltersManager implements StateChangeListener {
 		return fp;
 	}
 
-	public List<JPanel> createFilterPanels() {
+	public List<JPanel> createFilterPanels() throws MalformedURLException {
 		
 		List<JPanel> filterPanels = new ArrayList<>();
 		String dir = "plugins/rasterfilters/meta-inf";
@@ -89,15 +91,13 @@ class FiltersManager implements StateChangeListener {
 			
 			JsonArray binaries = json.getJsonArray("binaries");
 			for (int i = 0; i < binaries.size(); i++) {
-				try {
-					urls.add(new URL("jar:file:" + binaries.getString(i) + "!/"));
-					Main.debug(new URL("jar:file:/./" + binaries.getString(i) + "!/").toString());
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				File file = new File(binaries.getString(i));
+				if (file.exists()) {
+					URL url = new URL("jar", "", file.toURI().toURL() + "!/");
+					urls.add(url);
 				}
 			}
-			loader = new URLClassLoader(urls.toArray(new URL[urls.size()]));
+			loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
 			filterPanels.add(createFilterGUI(json));
 		}
 		
@@ -105,33 +105,29 @@ class FiltersManager implements StateChangeListener {
 	}
 	/**
 	 * @param model - model that contains info about filter which was changed
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException 
 	 */
 	@Override
-	public void filterStateChanged(FilterModel model) {
+	public void filterStateChanged(FilterModel model) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		
 		// create json msg for sending to all instances of filters
 		// here we should call the method encodeJson() from model
 		Filter filterToChange = null;
-		try {
-			// TODO: this is the temporary decision, need to load classes not here
-//			Class<?> clazz = loader.loadClass(model.getFilterClassName());
-//			filterToChange = (Filter) clazz.newInstance();
-			filterToChange = (Filter) Class.forName(model.getFilterClassName(), true, loader).newInstance();
-//			filterToChange = (Filter) Class.forName(model.getFilterClass()).newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		// TODO: this is the temporary decision, need to load classes not here
+		Class<?> clazz = loader.loadClass(model.getFilterClassName());
+		filterToChange = (Filter) clazz.newInstance();
 		
 		JsonObject jsonNewState = model.encodeJson();
 		
 		// TODO: check if this method returns false
-		filterToChange.changeFilterState(jsonNewState);
+		if (filterToChange != null) {
+			filterToChange.changeFilterState(jsonNewState);
+		} else {
+			Main.debug("Cannot load the class" + model.getFilterClassName());
+		}
 	}	
 	
 	public List<String> getFilterTitles() {

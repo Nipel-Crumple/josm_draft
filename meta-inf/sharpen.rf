@@ -1,6 +1,6 @@
 {
 		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.UnsharpMaskFilter",
-		"binaries":["/W:/Projects/josm/plugins/rasterfilters/lib/unsharpmask.jar"],
+		"binaries":["plugins/rasterfilters/lib/unsharpmask.jar"],
         "name":"sharpen",
         "title": "Sharpen / Contrast",
         "controls": [
