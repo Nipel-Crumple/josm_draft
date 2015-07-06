@@ -24,7 +24,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	public RasterFiltersPlugin(PluginInformation info) {
 		super(info);
-		Main.debug("Here we are");
+		Main.debug("Loading RasterFiltersPlugin");
 		getLayerList();
 	}
 	
@@ -33,7 +33,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 	
 	@Override
 	public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
-		Main.debug("INITIALIZING!");
+		Main.debug("Initialising RasterFiltersPlugin in mapFrame!");
 		if (Main.isDisplayingMapView()) {
 			Main.map.mapView.addLayerChangeListener(this);
 		}
@@ -56,7 +56,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	@Override
 	public void layerRemoved(Layer oldLayer) {
-		Main.debug("Layer was removed AXAZAZAZ");
+		Main.debug("Layer was removed");
 	}
 }
 

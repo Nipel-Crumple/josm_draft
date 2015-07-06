@@ -97,9 +97,9 @@ class FiltersManager implements StateChangeListener {
 					urls.add(url);
 				}
 			}
-			loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
 			filterPanels.add(createFilterGUI(json));
 		}
+		loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
 		
 		return filterPanels;
 	}
