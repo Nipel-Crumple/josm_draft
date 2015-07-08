@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -25,23 +24,24 @@ import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 
 class FiltersManager implements StateChangeListener {
 	
-	private Map<String, FilterStateOwner> states = new HashMap<>();
-	private Map<String, JsonObject> filtersWithMeta = new HashMap<>();
-	private List<String> filterTitles = new ArrayList<>();
-	private Set<URL> urls = new HashSet<>();
-	private ClassLoader loader;
+	public Map<String, FilterStateOwner> states = new HashMap<>();
+	public Map<String, JsonObject> filtersWithMeta = new HashMap<>();
+	public List<String> filterTitles = new ArrayList<>();
+	public Set<URL> urls = new HashSet<>();
+	public List<JsonObject> filtersMeta;
+	public ClassLoader loader;
 	
-	private JPanel createFilterGUI(JsonObject meta) {
+	private JPanel createFilterPanel(JsonObject meta) {
 		
 		FilterPanel fp = new FilterPanel();
-		
 		//listener to track sliders and checkbox of creating filter
 		FilterGuiListener filterListener = new FilterGuiListener(this);
 		String filterClassName = meta.getString("classname");
 		String filterTitle = meta.getString("title");
 		
+		fp.setName(filterTitle);
+		
 		states.put(filterClassName, filterListener);
-		filterTitles.add(filterTitle);
 		System.out.println(filterTitle);
 		// creating model of the filter
 		FilterModel filter = new FilterModel();
@@ -76,17 +76,18 @@ class FiltersManager implements StateChangeListener {
 		return fp;
 	}
 
-	public List<JPanel> createFilterPanels() throws MalformedURLException {
+	public void initFilters() throws MalformedURLException {
 		
-		List<JPanel> filterPanels = new ArrayList<>();
+//		List<JPanel> filterPanels = new ArrayList<>();
 		String dir = "plugins/rasterfilters/meta-inf";
 
 		//reading metainf from file
 		FilterReader fr = new FilterReader();
 		
-		List<JsonObject> filtersMeta = fr.readMetaInf(dir);
+		filtersMeta = fr.readMetaInf(dir);
 		
 		for (JsonObject json : filtersMeta) {
+			filterTitles.add(json.getString("title"));
 			filtersWithMeta.put(json.getString("name"), json);
 			
 			JsonArray binaries = json.getJsonArray("binaries");
@@ -97,11 +98,8 @@ class FiltersManager implements StateChangeListener {
 					urls.add(url);
 				}
 			}
-			filterPanels.add(createFilterGUI(json));
 		}
 		loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
-		
-		return filterPanels;
 	}
 	/**
 	 * @param model - model that contains info about filter which was changed
@@ -129,6 +127,15 @@ class FiltersManager implements StateChangeListener {
 			Main.debug("Cannot load the class" + model.getFilterClassName());
 		}
 	}	
+	
+	public JPanel createPanelByTitle(String title) {
+		for (JsonObject json : filtersMeta) {
+			if (json.getString("title").equals(title)) {
+				return createFilterPanel(json);
+			}
+		}
+		return null;
+	}
 	
 	public List<String> getFilterTitles() {
 		return filterTitles;

@@ -1,15 +1,19 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 
-public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener {
+public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener{
 	
 //	private static final String name = "UnsharpMaskListener";
 	private StateChangeListener handler;
@@ -68,5 +72,6 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		
-	}
+	}	
+	
 }

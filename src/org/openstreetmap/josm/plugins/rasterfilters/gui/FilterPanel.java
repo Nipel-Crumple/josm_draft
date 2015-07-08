@@ -4,12 +4,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -25,7 +28,8 @@ class FilterPanel extends JPanel {
 	public FilterPanel() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setMaximumSize(new Dimension(600, 400));
+		setMaximumSize(new Dimension(600, 300));
+		setPreferredSize(new Dimension(600, 250));
 		setAlignmentX(Component.CENTER_ALIGNMENT);
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setBackground(Color.white);
@@ -119,4 +123,11 @@ class FilterPanel extends JPanel {
 
 		this.add(sliderLabel);
 	}	
+	
+	public JButton addDeleteButton() {
+		JButton deleteButton = new JButton("Delete");
+		deleteButton.setName("delete");
+		this.add(deleteButton);
+		return deleteButton;
+	}
 }
