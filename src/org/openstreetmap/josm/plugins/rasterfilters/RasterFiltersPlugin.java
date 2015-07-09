@@ -21,6 +21,8 @@ import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
+	
+	private boolean isButtonAdded = false;
 
 	public RasterFiltersPlugin(PluginInformation info) {
 		super(info);
@@ -47,17 +49,21 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	@Override
 	public void layerAdded(Layer newLayer) {
-		LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
-		ShowLayerFiltersDialog action = new ShowLayerFiltersDialog();
-		((JPanel)dialog.getComponent(2)).add(new SideButton(action, false));
-		Main.debug("My name is" + dialog.getClass().getCanonicalName());
-		
+		if (!isButtonAdded) {
+			LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
+			ShowLayerFiltersDialog action = new ShowLayerFiltersDialog();
+			((JPanel)dialog.getComponent(2)).add(new SideButton(action, false));
+			Main.debug("My name is" + dialog.getClass().getCanonicalName());
+			isButtonAdded = true;
+		}
 	}
 
 	@Override
 	public void layerRemoved(Layer oldLayer) {
 		Main.debug("Layer was removed");
 	}
+	
+	
 }
 
 

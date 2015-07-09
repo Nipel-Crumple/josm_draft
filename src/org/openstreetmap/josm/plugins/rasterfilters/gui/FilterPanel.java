@@ -29,7 +29,7 @@ class FilterPanel extends JPanel {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setMaximumSize(new Dimension(600, 300));
-		setPreferredSize(new Dimension(600, 250));
+		setPreferredSize(new Dimension(600, 300));
 		setAlignmentX(Component.CENTER_ALIGNMENT);
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setBackground(Color.white);

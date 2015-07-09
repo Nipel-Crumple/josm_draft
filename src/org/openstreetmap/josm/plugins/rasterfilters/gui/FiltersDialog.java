@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,8 +32,8 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 	public JPanel pane;
 	public JButton addButton;
 	public DefaultListModel<String> listModel;
-	public JPanel filterHolder = new JPanel();
-	public FiltersManager fm = new FiltersManager();
+	public JPanel filterHolder;
+	public FiltersManager fm = new FiltersManager(this);
 	
 	class AddFilterToPanelListener implements ActionListener {
 
@@ -41,19 +42,20 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 			int[] indices = filtersList.getSelectedIndices();
 			for (int i = indices.length - 1; i >= 0; i--) {
 				String title = listModel.get(indices[i]);
-				
-				filterHolder.setLayout(new BoxLayout(filterHolder, BoxLayout.Y_AXIS));
-				filterHolder.setBackground(Color.white);
-				filterHolder.add(Box.createRigidArea(new Dimension(0,10)));
+				if (filterHolder == null) {
+					filterHolder = new JPanel();
+					filterHolder.setLayout(new BoxLayout(filterHolder, BoxLayout.Y_AXIS));
+					filterHolder.setBackground(Color.white);
+//					filterHolder.add(Box.createRigidArea(new Dimension(0,10)));
+					JScrollPane scrollPanel = new JScrollPane(filterHolder, 
+							JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+							JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+					pane.add(scrollPanel);
+				}
 				
 				JPanel panel = fm.createPanelByTitle(title);
-
+				
 				filterHolder.add(panel);
-				filterHolder.add(Box.createRigidArea(new Dimension(0,10)));
-				JScrollPane scrollPanel = new JScrollPane(filterHolder, 
-						JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-						JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-				pane.add(scrollPanel);
 				pane.validate();
 				
 				listModel.remove(indices[i]);
@@ -99,10 +101,8 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 			JScrollPane listScroller = new JScrollPane(filtersList);
 			listScroller.setPreferredSize(new Dimension(320, 100));
 			listScroller.setMaximumSize(new Dimension(320, 100));
-			listScroller.setMinimumSize(new Dimension(100, 100));
 			listPanel.setPreferredSize(new Dimension(400, 100));
 			listPanel.setMaximumSize(new Dimension(400, 100));
-			listPanel.setMinimumSize(new Dimension(100, 100));
 			listPanel.add(listScroller);
 			
 			addButton = new JButton();
@@ -144,7 +144,16 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+		FilterPanel filterPanel = (FilterPanel) ((JButton)e.getSource()).getParent();
+		listModel.addElement(filterPanel.getName());
+		Main.debug(String.valueOf(filterHolder.getComponentCount()));
+		filterPanel.removeAll();
+		filterHolder.remove(filterPanel);
+		filterHolder.revalidate();
+		filterHolder.repaint();
+		if (!addButton.isEnabled()) {
+			addButton.setEnabled(true);
+		}
 	}
 }
 

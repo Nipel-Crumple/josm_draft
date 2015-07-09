@@ -1,0 +1,26 @@
+{
+		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.UnsharpMaskFilter",
+		"binaries":["plugins/rasterfilters/lib/unsharpmask.jar"],
+        "name":"sharpen",
+        "title": "Sharpen3",
+        "controls": [
+                {
+                        "type": "linear_slider",
+                        "name": "amount",
+                        "title": "Amount",
+                        "value_type": "float",
+                        "scale": [0, 1],
+                        "default": 0.2,
+                        "decoration": "none"
+                },
+                {
+                        "type": "linear_slider",
+                        "name": "size",
+                        "title": "Size (px)",
+                        "value_type": "integer",
+                        "scale": [0, 20],
+                        "default": 2,
+                        "decoration": "none"
+                }
+        ]
+}

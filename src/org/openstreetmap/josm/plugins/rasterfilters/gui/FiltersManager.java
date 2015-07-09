@@ -25,11 +25,16 @@ import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 class FiltersManager implements StateChangeListener {
 	
 	public Map<String, FilterStateOwner> states = new HashMap<>();
+	public FiltersDialog dialog;
 	public Map<String, JsonObject> filtersWithMeta = new HashMap<>();
 	public List<String> filterTitles = new ArrayList<>();
 	public Set<URL> urls = new HashSet<>();
 	public List<JsonObject> filtersMeta;
 	public ClassLoader loader;
+	
+	public FiltersManager(FiltersDialog dialog) {
+		this.dialog = dialog;
+	}
 	
 	private JPanel createFilterPanel(JsonObject meta) {
 		
@@ -70,6 +75,7 @@ class FiltersManager implements StateChangeListener {
 			}
 			
 		}
+		fp.addDeleteButton().addActionListener(dialog);
 		
 		filterListener.setFilterState(filter);
 //		fp.setVisible(false);
