@@ -49,18 +49,7 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		}
 		
 		//notify about state is changed now so send msg to FiltersManager
-		try {
-			handler.filterStateChanged(filterState);
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		handler.filterStateChanged(filterState);
 	}
 
 	@Override

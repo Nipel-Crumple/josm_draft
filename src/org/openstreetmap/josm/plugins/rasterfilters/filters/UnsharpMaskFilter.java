@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.rasterfilters.filters;
 
+import java.awt.image.BufferedImage;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 
@@ -8,10 +10,10 @@ import com.jhlabs.image.UnsharpFilter;
 public class UnsharpMaskFilter implements Filter {
 
 	private UnsharpFilter unsharp = new UnsharpFilter();
-	private double amount;
+	private float amount;
 	private int size;
 
-	public UnsharpMaskFilter(double amount, int size) {
+	public UnsharpMaskFilter(float amount, int size) {
 		this.amount = amount;
 		this.size = size;
 	}
@@ -25,7 +27,7 @@ public class UnsharpMaskFilter implements Filter {
 		if (newState != null) {
 			// new value of amount
 			JsonObject amountJson = newState.getJsonObject("amount");
-			setAmount(amountJson.getJsonNumber("value").doubleValue());
+			setAmount((float) amountJson.getJsonNumber("value").doubleValue());
 
 			JsonObject sizeJson = newState.getJsonObject("size");
 			setSize(sizeJson.getJsonNumber("value").intValue());
@@ -44,7 +46,7 @@ public class UnsharpMaskFilter implements Filter {
 		return amount;
 	}
 
-	public void setAmount(double amount) {
+	public void setAmount(float amount) {
 		this.amount = amount;
 	}
 
@@ -54,6 +56,12 @@ public class UnsharpMaskFilter implements Filter {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+	
+	public BufferedImage applyFilter(BufferedImage img) {
+		unsharp.setAmount(amount);
+		unsharp.setRadius(size);
+		return unsharp.filter(img, null);
 	}
 	
 	

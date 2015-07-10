@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,10 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.layer.ImageProcessor;
 import org.openstreetmap.josm.plugins.rasterfilters.filters.Filter;
 import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 
-class FiltersManager implements StateChangeListener {
+class FiltersManager implements StateChangeListener, ImageProcessor {
 	
 	public Map<String, FilterStateOwner> states = new HashMap<>();
 	public FiltersDialog dialog;
@@ -31,6 +33,7 @@ class FiltersManager implements StateChangeListener {
 	public Set<URL> urls = new HashSet<>();
 	public List<JsonObject> filtersMeta;
 	public ClassLoader loader;
+	public Filter filterType;
 	
 	public FiltersManager(FiltersDialog dialog) {
 		this.dialog = dialog;
@@ -46,11 +49,25 @@ class FiltersManager implements StateChangeListener {
 		
 		fp.setName(filterTitle);
 		
+		
 		states.put(filterClassName, filterListener);
 		System.out.println(filterTitle);
 		// creating model of the filter
 		FilterModel filter = new FilterModel();
 		filter.setFilterClassName(filterClassName);
+		
+		//loading jar with filter at runtime
+		Class<?> clazz;
+		try {
+			clazz = loader.loadClass(filter.getFilterClassName());
+			filterType = (Filter) clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
 		checkBox.setName(meta.getString("name"));
@@ -114,21 +131,16 @@ class FiltersManager implements StateChangeListener {
 	 * @throws ClassNotFoundException 
 	 */
 	@Override
-	public void filterStateChanged(FilterModel model) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public void filterStateChanged(FilterModel model) {
 		
 		// create json msg for sending to all instances of filters
 		// here we should call the method encodeJson() from model
-		Filter filterToChange = null;
-		
-		// TODO: this is the temporary decision, need to load classes not here
-		Class<?> clazz = loader.loadClass(model.getFilterClassName());
-		filterToChange = (Filter) clazz.newInstance();
 		
 		JsonObject jsonNewState = model.encodeJson();
 		
 		// TODO: check if this method returns false
-		if (filterToChange != null) {
-			filterToChange.changeFilterState(jsonNewState);
+		if (filterType != null) {
+			filterType.changeFilterState(jsonNewState);
 		} else {
 			Main.debug("Cannot load the class" + model.getFilterClassName());
 		}
@@ -145,6 +157,12 @@ class FiltersManager implements StateChangeListener {
 	
 	public List<String> getFilterTitles() {
 		return filterTitles;
+	}
+
+	@Override
+	public BufferedImage process(BufferedImage image) {
+		// TODO Auto-generated method stub
+		return filterType.applyFilter(image);
 	}
 
 }
