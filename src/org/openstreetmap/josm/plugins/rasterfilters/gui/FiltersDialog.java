@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,16 +23,20 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.layer.ImageProcessor;
+import org.openstreetmap.josm.gui.layer.ImageryLayer;
+import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
+import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
 
 public class FiltersDialog implements ListSelectionListener, ActionListener {
 	
-	public JList filtersList;
+	public JList<String> filtersList;
 	public JFrame frame;
 	public JPanel pane;
 	public JButton addButton;
 	public DefaultListModel<String> listModel;
-	public JPanel filterHolder;
-	public FiltersManager fm = new FiltersManager(this);
+	public JPanel filterContainer;
 	
 	class AddFilterToPanelListener implements ActionListener {
 
@@ -41,21 +44,33 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int[] indices = filtersList.getSelectedIndices();
 			for (int i = indices.length - 1; i >= 0; i--) {
-				String title = listModel.get(indices[i]);
-				if (filterHolder == null) {
-					filterHolder = new JPanel();
-					filterHolder.setLayout(new BoxLayout(filterHolder, BoxLayout.Y_AXIS));
-					filterHolder.setBackground(Color.white);
-//					filterHolder.add(Box.createRigidArea(new Dimension(0,10)));
-					JScrollPane scrollPanel = new JScrollPane(filterHolder, 
-							JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-							JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-					pane.add(scrollPanel);
+		        String title = listModel.get(indices[i]);
+				JPanel panel = null;
+				Layer activeLayer = Main.map.mapView.getActiveLayer();
+				if (activeLayer instanceof ImageryLayer) {
+					ImageryLayer layer = (ImageryLayer) activeLayer;
+//					Main.debug("Inside instanceof ImageryLayer; ImageProcessor number is " + layer.getImageProcessors().size());
+					if (layer.getImageProcessors().size() > 0) {
+    					for (ImageProcessor temp : layer.getImageProcessors()) {
+    						if (temp instanceof FiltersManager) {
+//    		                    Main.debug("ImageryLayer has FilterManager");
+    							panel = ((FiltersManager) temp).createPanelByTitle(title);
+    							break;
+    						}
+    					}
+					} else {
+//                        Main.debug("ImageryLayer has no FilterManager");
+                        FiltersManager fm = createFilterManager();
+                        layer.addImageProcessor(fm);
+                        panel = fm.createPanelByTitle(title);
+                    }
 				}
 				
-				JPanel panel = fm.createPanelByTitle(title);
+				if (panel != null) {
+				    filterContainer = createFilterContainer();
+	                filterContainer.add(panel);
+				}
 				
-				filterHolder.add(panel);
 				pane.validate();
 				
 				listModel.remove(indices[i]);
@@ -66,6 +81,20 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 			
 		}
 	}
+	
+	public JPanel createFilterContainer() {
+        if (filterContainer == null) {
+            filterContainer = new JPanel();
+            filterContainer.setLayout(new BoxLayout(filterContainer, BoxLayout.Y_AXIS));
+            filterContainer.setBackground(Color.white);
+//          filterHolder.add(Box.createRigidArea(new Dimension(0,10)));
+            JScrollPane scrollPanel = new JScrollPane(filterContainer, 
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            pane.add(scrollPanel);
+        }
+        return filterContainer;
+	}
 
 	public JFrame createAndShowGUI() throws MalformedURLException {
 		if (frame != null) {
@@ -73,7 +102,7 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 			return frame;
 		} else {
 			frame = new JFrame("Filters");
-			fm.initFilters();
+			FilterInitializer.initFilters();
 			
 			pane = new JPanel();
 			pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
@@ -85,13 +114,13 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 			listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.X_AXIS));
 			listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 			
-			List<String> filterTitles = new ArrayList<String>(fm.getFilterTitles());
+			List<String> filterTitles = new ArrayList<String>(FilterInitializer.filterTitles);
 			listModel = new DefaultListModel<>();
 			for (String temp : filterTitles) {
 				listModel.addElement(temp);
 			}
 			
-			filtersList = new JList(listModel); 
+			filtersList = new JList<String>(listModel); 
 			if (listModel.getSize() == 0) {
 				Main.debug("No metaINF");
 			}
@@ -125,6 +154,9 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 		}
 	}
 
+	public FiltersManager createFilterManager() {
+		return new FiltersManager(this);
+	}
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		// TODO Auto-generated method stub
@@ -146,11 +178,11 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 		// TODO Auto-generated method stub
 		FilterPanel filterPanel = (FilterPanel) ((JButton)e.getSource()).getParent();
 		listModel.addElement(filterPanel.getName());
-		Main.debug(String.valueOf(filterHolder.getComponentCount()));
+		Main.debug(String.valueOf(filterContainer.getComponentCount()));
 		filterPanel.removeAll();
-		filterHolder.remove(filterPanel);
-		filterHolder.revalidate();
-		filterHolder.repaint();
+		filterContainer.remove(filterPanel);
+		filterContainer.revalidate();
+		filterContainer.repaint();
 		if (!addButton.isEnabled()) {
 			addButton.setEnabled(true);
 		}

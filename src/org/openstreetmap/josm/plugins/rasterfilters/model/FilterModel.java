@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.rasterfilters.gui;
+package org.openstreetmap.josm.plugins.rasterfilters.model;
 
 import java.util.HashMap;
 import java.util.Map;

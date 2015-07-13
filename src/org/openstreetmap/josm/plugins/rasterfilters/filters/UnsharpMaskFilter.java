@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.openstreetmap.josm.Main;
+
 import com.jhlabs.image.UnsharpFilter;
 
 public class UnsharpMaskFilter implements Filter {
@@ -32,9 +34,7 @@ public class UnsharpMaskFilter implements Filter {
 			JsonObject sizeJson = newState.getJsonObject("size");
 			setSize(sizeJson.getJsonNumber("value").intValue());
 			
-			if (toString().equals(newState.toString())) {
-				System.out.println("from unsharp: \n" + toString());
-			}
+			Main.debug(toString());
 			
 			return true;
 		}
@@ -75,6 +75,6 @@ public class UnsharpMaskFilter implements Filter {
 					.add("value", size)
 					.build())
 			.build();
-		return json.toString();
+		return "from unsharp: \n" + json.toString();
 	}
 }

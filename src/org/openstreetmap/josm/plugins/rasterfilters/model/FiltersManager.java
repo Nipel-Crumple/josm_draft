@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.rasterfilters.gui;
+package org.openstreetmap.josm.plugins.rasterfilters.model;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,24 +22,26 @@ import javax.swing.JSlider;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.ImageProcessor;
 import org.openstreetmap.josm.plugins.rasterfilters.filters.Filter;
+import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterGuiListener;
+import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterPanel;
+import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterStateOwner;
+import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 
-class FiltersManager implements StateChangeListener, ImageProcessor {
+public class FiltersManager implements StateChangeListener, ImageProcessor {
 	
 	public Map<String, FilterStateOwner> states = new HashMap<>();
 	public FiltersDialog dialog;
-	public Map<String, JsonObject> filtersWithMeta = new HashMap<>();
-	public List<String> filterTitles = new ArrayList<>();
-	public Set<URL> urls = new HashSet<>();
-	public List<JsonObject> filtersMeta;
-	public ClassLoader loader;
 	public Filter filterType;
 	
 	public FiltersManager(FiltersDialog dialog) {
 		this.dialog = dialog;
 	}
 	
-	private JPanel createFilterPanel(JsonObject meta) {
+	public FiltersManager() {
+		
+	}
+	private JPanel createFilterWithPanel(JsonObject meta) {
 		
 		FilterPanel fp = new FilterPanel();
 		//listener to track sliders and checkbox of creating filter
@@ -59,7 +61,7 @@ class FiltersManager implements StateChangeListener, ImageProcessor {
 		//loading jar with filter at runtime
 		Class<?> clazz;
 		try {
-			clazz = loader.loadClass(filter.getFilterClassName());
+			clazz = FilterInitializer.loader.loadClass(filter.getFilterClassName());
 			filterType = (Filter) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -99,36 +101,11 @@ class FiltersManager implements StateChangeListener, ImageProcessor {
 		return fp;
 	}
 
-	public void initFilters() throws MalformedURLException {
-		
-//		List<JPanel> filterPanels = new ArrayList<>();
-		String dir = "plugins/rasterfilters/meta-inf";
-
-		//reading metainf from file
-		FilterReader fr = new FilterReader();
-		
-		filtersMeta = fr.readMetaInf(dir);
-		
-		for (JsonObject json : filtersMeta) {
-			filterTitles.add(json.getString("title"));
-			filtersWithMeta.put(json.getString("name"), json);
-			
-			JsonArray binaries = json.getJsonArray("binaries");
-			for (int i = 0; i < binaries.size(); i++) {
-				File file = new File(binaries.getString(i));
-				if (file.exists()) {
-					URL url = new URL("jar", "", file.toURI().toURL() + "!/");
-					urls.add(url);
-				}
-			}
-		}
-		loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
-	}
+	
 	/**
+	 * The method notifies about changes in the filter's status
+	 * 
 	 * @param model - model that contains info about filter which was changed
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws ClassNotFoundException 
 	 */
 	@Override
 	public void filterStateChanged(FilterModel model) {
@@ -140,6 +117,7 @@ class FiltersManager implements StateChangeListener, ImageProcessor {
 		
 		// TODO: check if this method returns false
 		if (filterType != null) {
+//			Main.debug("FilterType is not null; notifying about new state");
 			filterType.changeFilterState(jsonNewState);
 		} else {
 			Main.debug("Cannot load the class" + model.getFilterClassName());
@@ -147,22 +125,19 @@ class FiltersManager implements StateChangeListener, ImageProcessor {
 	}	
 	
 	public JPanel createPanelByTitle(String title) {
-		for (JsonObject json : filtersMeta) {
+		for (JsonObject json : FilterInitializer.filtersMeta) {
 			if (json.getString("title").equals(title)) {
-				return createFilterPanel(json);
+				return createFilterWithPanel(json);
 			}
 		}
 		return null;
-	}
-	
-	public List<String> getFilterTitles() {
-		return filterTitles;
 	}
 
 	@Override
 	public BufferedImage process(BufferedImage image) {
 		// TODO Auto-generated method stub
 		return filterType.applyFilter(image);
+		
 	}
 
 }

@@ -1,4 +1,5 @@
-package org.openstreetmap.josm.plugins.rasterfilters.gui;
+package org.openstreetmap.josm.plugins.rasterfilters.model;
+
 
 public interface StateChangeListener {
 	

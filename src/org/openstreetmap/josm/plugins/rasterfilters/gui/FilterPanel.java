@@ -21,7 +21,7 @@ import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-class FilterPanel extends JPanel {
+public class FilterPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 
