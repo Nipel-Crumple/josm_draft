@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.rmi.server.UID;
 
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -15,6 +16,7 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 	
 	private StateChangeListener handler;
     private FilterStateModel filterState;
+    private UID filterId;
     
     public FilterGuiListener(StateChangeListener handler) {
     	this.handler = handler;
@@ -46,7 +48,7 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 		}
 		
 		//notify about state is changed now so send msg to FiltersManager
-		handler.filterStateChanged(filterState);
+		handler.filterStateChanged(filterId, filterState);
 	}
 
 	@Override
@@ -58,5 +60,13 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 	public void itemStateChanged(ItemEvent e) {
 		
 	}	
+	
+	public void setFilterId(UID filterId) {
+		this.filterId = filterId;
+	}
+	
+	public UID getFilterId() {
+		return filterId;
+	}
 	
 }

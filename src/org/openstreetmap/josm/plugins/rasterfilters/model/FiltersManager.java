@@ -1,16 +1,23 @@
 package org.openstreetmap.josm.plugins.rasterfilters.model;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.rmi.server.UID;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.ImageProcessor;
 import org.openstreetmap.josm.plugins.rasterfilters.filters.Filter;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterGuiListener;
@@ -18,9 +25,9 @@ import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterPanel;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterStateOwner;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
-public class FiltersManager implements StateChangeListener, ImageProcessor {
+public class FiltersManager implements StateChangeListener, ImageProcessor, ActionListener {
 	
-	public Map<Filter, FilterStateOwner> states = new HashMap<>();
+	public Map<UID, Filter> filtersMap = new LinkedHashMap<>();
 	public FiltersDialog dialog;
 	
 	public FiltersManager(FiltersDialog dialog) {
@@ -42,7 +49,6 @@ public class FiltersManager implements StateChangeListener, ImageProcessor {
 		String filterTitle = meta.getString("title");
 		
 		fp.setName(filterTitle);
-		
 		// creating model of the filter
 		FilterStateModel filterState = new FilterStateModel();
 		filterState.setFilterClassName(filterClassName);
@@ -51,21 +57,31 @@ public class FiltersManager implements StateChangeListener, ImageProcessor {
 		Class<?> clazz;
 		
 		//filter for adding to map states
-		Filter filterType = null;
+		Filter filter = null;
 		
 		try {
+			
 			clazz = FilterInitializer.loader.loadClass(filterState.getFilterClassName());
-			filterType = (Filter) clazz.newInstance();
+			filter = (Filter) clazz.newInstance();
+			
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
+			
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
+			
 		}
 		
-		if (filterType != null) {
-			states.put(filterType, filterListener);
+		filter.setState(filterState);
+		
+		if (filter != null) {
+			UID filterId = new UID();
+			fp.setFilterId(filterId);
+			filterListener.setFilterId(filterId);
+			filter.setId(filterId);
+			filtersMap.put(filterId, filter);
 		}
 
 		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
@@ -95,9 +111,11 @@ public class FiltersManager implements StateChangeListener, ImageProcessor {
 			}
 			
 		}
-		fp.addDeleteButton().addActionListener(dialog);
+		fp.addDeleteButton().addActionListener(this);
 		
 		filterListener.setFilterState(filterState);
+		
+		Main.debug("The number of elems in the Filters map is equal \n" + filtersMap.size());
 		
 		return fp;
 	}
@@ -106,29 +124,79 @@ public class FiltersManager implements StateChangeListener, ImageProcessor {
 	/**
 	 * The method notifies about changes in the filter's status
 	 * 
-	 * @param model - model that contains info about filter which was changed
+	 * @param filterState - model that contains info about filter which was changed
 	 */
 	@Override
-	public void filterStateChanged(FilterStateModel model) {
+	public void filterStateChanged(UID filterId, FilterStateModel filterState) {
 		
-		// create json msg for sending to all instances of filters
-		// here we should call the method encodeJson() from model
-		JsonObject jsonNewState = model.encodeJson();
+		filtersMap.get(filterId).changeFilterState(filterState.encodeJson());
 		
 	}	
 	
 	public JPanel createPanelByTitle(String title) {
+		
 		for (JsonObject json : FilterInitializer.filtersMeta) {
+			
 			if (json.getString("title").equals(title)) {
 				return createFilterWithPanel(json);
 			}
 		}
+		
 		return null;
 	}
 
 	@Override
 	public BufferedImage process(BufferedImage image) {
-		return null;
+		
+		Iterator<Filter> it = filtersMap.values().iterator();
+		
+		//iterating through map of filters according to the order
+		while (it.hasNext()) {
+			
+			// if next filter will return null
+			// we should take an old example of the image
+			BufferedImage oldImg = image;
+			Filter curFilter = it.next();
+			
+			// applying filter to the current image
+			image = curFilter.applyFilter(image);
+			
+			if (image == null) {
+				image = oldImg;
+			}
+		}
+		
+		return image;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		FilterPanel filterPanel = (FilterPanel) ((JButton) e.getSource())
+				.getParent();
+		
+		UID filterId = filterPanel.getFilterId();
+		
+		// removing filter from the filters chain
+		filtersMap.remove(filterId);
+		
+		// add filterTitle to the 'choose list' on the top
+		dialog.listModel.addElement(filterPanel.getName());
+		
+		//removing and refreshing gui
+		filterPanel.removeAll();
+		dialog.filterContainer.remove(filterPanel);
+		dialog.filterContainer.revalidate();
+		dialog.filterContainer.repaint();
+		
+		// if there were no elements in the list 
+		// but then it appeared 
+		// button should be enabled
+		if (!dialog.addButton.isEnabled()) {
+			dialog.addButton.setEnabled(true);
+		}
+		
+		Main.debug("The number of elems in the Filters map is equal \n" + filtersMap.size());
 	}
 
 }

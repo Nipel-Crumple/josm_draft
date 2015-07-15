@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.server.UID;
 import java.util.Hashtable;
 
 import javax.json.JsonArray;
@@ -24,6 +25,7 @@ import javax.swing.border.EmptyBorder;
 public class FilterPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
+	private UID filterId;
 
 	public FilterPanel() {
 		super();
@@ -129,5 +131,13 @@ public class FilterPanel extends JPanel {
 		deleteButton.setName("delete");
 		this.add(deleteButton);
 		return deleteButton;
+	}
+	
+	public void setFilterId(UID filterId) {
+		this.filterId = filterId;
+	}
+	
+	public UID getFilterId() {
+		return filterId;
 	}
 }

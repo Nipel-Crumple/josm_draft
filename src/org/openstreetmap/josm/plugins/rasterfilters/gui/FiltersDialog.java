@@ -29,7 +29,7 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
 
-public class FiltersDialog implements ListSelectionListener, ActionListener {
+public class FiltersDialog implements ListSelectionListener {
 
 	public JList<String> filtersList;
 	public JFrame frame;
@@ -185,18 +185,4 @@ public class FiltersDialog implements ListSelectionListener, ActionListener {
 		}
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		FilterPanel filterPanel = (FilterPanel) ((JButton) e.getSource())
-				.getParent();
-		listModel.addElement(filterPanel.getName());
-		Main.debug(String.valueOf(filterContainer.getComponentCount()));
-		filterPanel.removeAll();
-		filterContainer.remove(filterPanel);
-		filterContainer.revalidate();
-		filterContainer.repaint();
-		if (!addButton.isEnabled()) {
-			addButton.setEnabled(true);
-		}
-	}
 }
