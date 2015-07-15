@@ -11,12 +11,12 @@ import javax.json.JsonObjectBuilder;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.Value;
 
-public class FilterModel {
+public class FilterStateModel {
 	
 	private Map<String, Value<?>> params = new HashMap<>();
 	private String filterClassName;
 	
-	public FilterModel() { 
+	public FilterStateModel() { 
 		
 	}
 	

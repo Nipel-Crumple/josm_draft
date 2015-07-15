@@ -1,9 +1,9 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterModel;
+import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 
 public interface FilterStateOwner {
 	
-	public FilterModel getState();
+	public FilterStateModel getState();
 	
 }

@@ -7,20 +7,20 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterModel;
+import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 import org.openstreetmap.josm.plugins.rasterfilters.model.StateChangeListener;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 
 public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener{
 	
 	private StateChangeListener handler;
-    private FilterModel filterState;
+    private FilterStateModel filterState;
     
     public FilterGuiListener(StateChangeListener handler) {
     	this.handler = handler;
     }
     
-    public void setFilterState(FilterModel state) {
+    public void setFilterState(FilterStateModel state) {
     	this.filterState = state;
     }
 
@@ -50,8 +50,7 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 	}
 
 	@Override
-	public FilterModel getState() {
-		//encoding new filter's state info to json for sending
+	public FilterStateModel getState() {
 		return filterState;
 	}
 
