@@ -74,8 +74,6 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			
 		}
 		
-		filter.setState(filterState);
-		
 		if (filter != null) {
 			UID filterId = new UID();
 			fp.setFilterId(filterId);
@@ -111,6 +109,9 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			}
 			
 		}
+
+		filter.setState(filterState);
+		
 		fp.addDeleteButton().addActionListener(this);
 		
 		filterListener.setFilterState(filterState);
