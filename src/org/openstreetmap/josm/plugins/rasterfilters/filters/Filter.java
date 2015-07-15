@@ -10,7 +10,6 @@ import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 public interface Filter{
 	
 	public boolean changeFilterState(JsonObject filterState);
-	public void updateFilterState();
 	public BufferedImage applyFilter(BufferedImage img);
 	public void setState(FilterStateModel state);
 	public void setId(UID id);

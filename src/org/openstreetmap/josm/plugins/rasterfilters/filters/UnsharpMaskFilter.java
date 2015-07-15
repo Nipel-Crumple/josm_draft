@@ -67,10 +67,6 @@ public class UnsharpMaskFilter implements Filter {
 		unsharp.setRadius(size);
 		return unsharp.filter(img, null);
 	}
-
-	public void updateFilterState() {
-		
-	}
 	
 	@Override
 	public String toString() {
@@ -88,6 +84,7 @@ public class UnsharpMaskFilter implements Filter {
 	@Override
 	public void setState(FilterStateModel state) {
 		this.state = state;
+		changeFilterState(state.encodeJson());
 	}
 	
 	@Override
