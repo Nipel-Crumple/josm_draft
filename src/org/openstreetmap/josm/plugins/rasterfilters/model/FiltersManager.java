@@ -2,12 +2,16 @@ package org.openstreetmap.josm.plugins.rasterfilters.model;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.rmi.server.UID;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -25,9 +29,10 @@ import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterPanel;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterStateOwner;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
-public class FiltersManager implements StateChangeListener, ImageProcessor, ActionListener {
+public class FiltersManager implements StateChangeListener, ImageProcessor, ActionListener, ItemListener {
 	
 	public Map<UID, Filter> filtersMap = new LinkedHashMap<>();
+	public Set<Filter> disabledFilters = new HashSet<>();
 	public FiltersDialog dialog;
 	
 	public FiltersManager(FiltersDialog dialog) {
@@ -75,16 +80,20 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		}
 		
 		if (filter != null) {
+			
 			UID filterId = new UID();
 			fp.setFilterId(filterId);
 			filterListener.setFilterId(filterId);
 			filter.setId(filterId);
 			filtersMap.put(filterId, filter);
+			
+			// all filters disabled in the beggining by default
+			disabledFilters.add(filter);
 		}
 
 		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
 		checkBox.setName(meta.getString("name"));
-		checkBox.addItemListener(filterListener);
+		checkBox.addItemListener(this);
 		fp.add(checkBox);
 		
 		JsonArray controls = meta.getJsonArray("controls");
@@ -154,16 +163,19 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		//iterating through map of filters according to the order
 		while (it.hasNext()) {
 			
-			// if next filter will return null
-			// we should take an old example of the image
-			BufferedImage oldImg = image;
 			Filter curFilter = it.next();
-			
-			// applying filter to the current image
-			image = curFilter.applyFilter(image);
-			
-			if (image == null) {
-				image = oldImg;
+
+			if (!disabledFilters.contains(curFilter)) {
+				// if next filter will return null
+				// we should take an old example of the image
+				BufferedImage oldImg = image;
+				
+				// applying filter to the current image
+				image = curFilter.applyFilter(image);
+				
+				if (image == null) {
+					image = oldImg;
+				}
 			}
 		}
 		
@@ -199,5 +211,24 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		
 		Main.debug("The number of elems in the Filters map is equal \n" + filtersMap.size());
 	}
+	
 
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		
+		JCheckBox enableFilter = (JCheckBox) e.getSource();
+		FilterPanel filterPanel = (FilterPanel) enableFilter.getParent();
+		
+		if (!enableFilter.isSelected()) {
+			
+			UID filterId = filterPanel.getFilterId();
+			disabledFilters.add(filtersMap.get(filterId));
+			
+		} else {
+			
+			UID filterId = filterPanel.getFilterId();
+			disabledFilters.remove(filtersMap.get(filterId));
+		
+		}
+	}	
 }

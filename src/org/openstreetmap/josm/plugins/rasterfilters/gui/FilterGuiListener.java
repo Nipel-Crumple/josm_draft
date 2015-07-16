@@ -13,7 +13,7 @@ import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 import org.openstreetmap.josm.plugins.rasterfilters.model.StateChangeListener;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 
-public class FilterGuiListener implements ChangeListener, FilterStateOwner, ItemListener{
+public class FilterGuiListener implements ChangeListener, FilterStateOwner {
 	
 	private StateChangeListener handler;
     private FilterStateModel filterState;
@@ -56,13 +56,6 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 	public FilterStateModel getState() {
 		return filterState;
 	}
-
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-		JCheckBox enableFilter = (JCheckBox) e.getSource();
-		filterState.setSelected(enableFilter.isSelected());
-		handler.filterStateChanged(filterId, filterState);
-	}	
 	
 	public void setFilterId(UID filterId) {
 		this.filterId = filterId;

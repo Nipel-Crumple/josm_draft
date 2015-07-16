@@ -13,6 +13,4 @@ public interface Filter{
 	public BufferedImage applyFilter(BufferedImage img);
 	public void setState(FilterStateModel state);
 	public void setId(UID id);
-	public void setEnabled(boolean enabled);
-	public boolean isEnabled();
 }
