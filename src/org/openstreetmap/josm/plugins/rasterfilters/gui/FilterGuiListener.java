@@ -4,6 +4,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.rmi.server.UID;
 
+import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -58,7 +59,9 @@ public class FilterGuiListener implements ChangeListener, FilterStateOwner, Item
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		
+		JCheckBox enableFilter = (JCheckBox) e.getSource();
+		filterState.setSelected(enableFilter.isSelected());
+		handler.filterStateChanged(filterId, filterState);
 	}	
 	
 	public void setFilterId(UID filterId) {

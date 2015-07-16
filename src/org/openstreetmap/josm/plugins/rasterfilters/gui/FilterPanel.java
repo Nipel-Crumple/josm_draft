@@ -30,7 +30,7 @@ public class FilterPanel extends JPanel {
 	public FilterPanel() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setMaximumSize(new Dimension(600, 300));
+		setMaximumSize(new Dimension(600, 500));
 		setPreferredSize(new Dimension(600, 300));
 		setAlignmentX(Component.CENTER_ALIGNMENT);
 		setBorder(BorderFactory.createLineBorder(Color.black));
@@ -56,7 +56,7 @@ public class FilterPanel extends JPanel {
 				slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, initValue);
 				slider.setName(json.getString("name"));
 				slider.setToolTipText(String.valueOf(slider.getValue()));
-				slider.setMinorTickSpacing(1);
+				slider.setMinorTickSpacing(5);
 				slider.setMajorTickSpacing(maxValue / 4);
 			} else if (valueType.equals("float")) {
 				//every value is supplied by 10 to be integer for slider

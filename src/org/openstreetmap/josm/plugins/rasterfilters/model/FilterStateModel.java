@@ -15,6 +15,7 @@ public class FilterStateModel {
 	
 	private Map<String, Value<?>> params = new HashMap<>();
 	private String filterClassName;
+	private boolean selected;
 	
 	public FilterStateModel() { 
 		
@@ -51,6 +52,7 @@ public class FilterStateModel {
 	
 	public JsonObject encodeJson() {
 		JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
+		jsonBuilder.add("enabled", isSelected());
 		for (Entry<String, Value<?>> entry : params.entrySet()) {
 			Number value = (Number) entry.getValue().getValue();
 			if (value instanceof Double) {
@@ -65,5 +67,13 @@ public class FilterStateModel {
 		}
 		
 		return jsonBuilder.build();
+	}
+	
+	public boolean isSelected() {
+		return selected;
+	}
+	
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 }

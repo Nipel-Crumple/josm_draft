@@ -18,19 +18,14 @@ public class UnsharpMaskFilter implements Filter {
 	private float amount;
 	private int size;
 	private UID id;
-
-	public UnsharpMaskFilter(float amount, int size) {
-		this.amount = amount;
-		this.size = size;
-	}
-
-	public UnsharpMaskFilter() {
-
-	}
-
+	private boolean enabled;
+	
 	@Override
 	public boolean changeFilterState(JsonObject filterState) {
 		if (filterState != null) {
+			
+			enabled = filterState.getBoolean("enabled");
+			
 			// new value of amount
 			JsonObject amountJson = filterState.getJsonObject("amount");
 			setAmount((float) amountJson.getJsonNumber("value").doubleValue());
@@ -45,32 +40,11 @@ public class UnsharpMaskFilter implements Filter {
 
 		return false;
 	}
-
-	public double getAmount() {
-		return amount;
-	}
-
-	public void setAmount(float amount) {
-		this.amount = amount;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-	
-	public BufferedImage applyFilter(BufferedImage img) {
-		unsharp.setAmount(amount);
-		unsharp.setRadius(size);
-		return unsharp.filter(img, null);
-	}
 	
 	@Override
 	public String toString() {
 		JsonObject json = Json.createObjectBuilder()
+			.add("enabled", enabled)
 			.add("amount", Json.createObjectBuilder()
 					.add("value", amount)
 					.build())
@@ -91,4 +65,42 @@ public class UnsharpMaskFilter implements Filter {
 	public void setId(UID id) {
 		this.id = id;
 	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(float amount) {
+		this.amount = amount;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+	
+	public BufferedImage applyFilter(BufferedImage img) {
+		if (enabled) {
+			unsharp.setAmount(amount);
+			unsharp.setRadius(size);
+			return unsharp.filter(img, null);
+		} else {
+			return img;
+		}
+	}
+	
+	
 }

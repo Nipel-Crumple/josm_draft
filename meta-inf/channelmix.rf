@@ -1,0 +1,35 @@
+{
+		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.ChannelMixFilterImpl",
+		"binaries":["plugins/rasterfilters/lib/channelmix.jar"],
+        "name":"channelMix",
+        "title": "RGB Mix Filter",
+        "controls": [
+                {
+                        "type": "linear_slider",
+                        "name": "red",
+                        "title": "Red",
+                        "value_type": "integer",
+                        "scale": [0, 255],
+                        "default": 0,
+                        "decoration": "none"
+                },
+                {
+                        "type": "linear_slider",
+                        "name": "green",
+                        "title": "Green",
+                        "value_type": "integer",
+                        "scale": [0, 255],
+                        "default": 0,
+                        "decoration": "none"
+                },
+                {
+                        "type": "linear_slider",
+                        "name": "blue",
+                        "title": "Blue",
+                        "value_type": "integer",
+                        "scale": [0, 255],
+                        "default": 0,
+                        "decoration": "none"
+                }
+        ]
+}
