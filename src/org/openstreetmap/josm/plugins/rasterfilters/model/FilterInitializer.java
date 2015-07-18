@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -19,7 +20,7 @@ import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 public class FilterInitializer {
 	
 	public static Map<String, JsonObject> filtersWithMeta = new HashMap<>();
-	public static List<String> filterTitles = new ArrayList<>();
+	public static Set<String> filterTitles = new TreeSet<>();
 	public static Set<URL> urls = new HashSet<>();
 	public static List<JsonObject> filtersMeta;
 	public static ClassLoader loader;

@@ -30,15 +30,15 @@ public class FilterPanel extends JPanel {
 	public FilterPanel() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setMaximumSize(new Dimension(600, 500));
-		setPreferredSize(new Dimension(600, 300));
+		setMaximumSize(new Dimension(350, 400));
+//		setPreferredSize(new Dimension(600, 300));
 		setAlignmentX(Component.CENTER_ALIGNMENT);
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setBackground(Color.white);
 	}
 
 	public JComponent addGuiElement(JsonObject json) {
-		Border sliderBorder = new EmptyBorder(10, 20, 10, 20);
+		Border sliderBorder = new EmptyBorder(5, 5, 5, 5);
 		String type = json.getString("type");
 		
 		if (type.equals("linear_slider")) {
@@ -56,8 +56,8 @@ public class FilterPanel extends JPanel {
 				slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, initValue);
 				slider.setName(json.getString("name"));
 				slider.setToolTipText(String.valueOf(slider.getValue()));
-				slider.setMinorTickSpacing(5);
-				slider.setMajorTickSpacing(maxValue / 4);
+				slider.setMinorTickSpacing(maxValue / 4);
+//				slider.setMajorTickSpacing(maxValue / 4);
 			} else if (valueType.equals("float")) {
 				//every value is supplied by 10 to be integer for slider
 				int minValue = array.getInt(0) * 100;
@@ -75,9 +75,9 @@ public class FilterPanel extends JPanel {
 			}
 
 
-			if (!labelTable.isEmpty()) {
-				slider.setLabelTable(labelTable);
-			}
+//			if (!labelTable.isEmpty()) {
+//				slider.setLabelTable(labelTable);
+//			}
 			
 			slider.setBackground(this.getBackground());
 			slider.setBorder(sliderBorder);
@@ -85,7 +85,7 @@ public class FilterPanel extends JPanel {
 			slider.setPaintLabels(true);
 			Font font = new Font("Arial", Font.PLAIN, 12);
 			slider.setFont(font);
-			slider.setAlignmentX(Component.LEFT_ALIGNMENT);
+//			slider.setAlignmentX(Component.LEFT_ALIGNMENT);
 			slider.setVisible(true);
 			
 			this.add(slider);
@@ -112,7 +112,7 @@ public class FilterPanel extends JPanel {
 	}
 
 	private void addSliderTitle(String labelText) {
-		Border labelBorder = new EmptyBorder(15, 20, 0, 0);
+		Border labelBorder = new EmptyBorder(5, 5, 0, 0);
 		Font labelFont = new Font("Arial", Font.PLAIN, 14);
 
 		JLabel sliderLabel = new JLabel(labelText);
@@ -126,11 +126,11 @@ public class FilterPanel extends JPanel {
 		this.add(sliderLabel);
 	}	
 	
-	public JButton addDeleteButton() {
-		JButton deleteButton = new JButton("Delete");
-		deleteButton.setName("delete");
-		this.add(deleteButton);
-		return deleteButton;
+	public JButton addRemoveButton() {
+		JButton removeButton = new JButton("Delete");
+		removeButton.setName("delete");
+		this.add(removeButton);
+		return removeButton;
 	}
 	
 	public void setFilterId(UID filterId) {

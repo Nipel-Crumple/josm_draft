@@ -121,7 +121,7 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 
 		filter.setState(filterState);
 		
-		fp.addDeleteButton().addActionListener(this);
+		fp.addRemoveButton().addActionListener(this);
 		
 		filterListener.setFilterState(filterState);
 		
@@ -196,11 +196,22 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		// add filterTitle to the 'choose list' on the top
 		dialog.listModel.addElement(filterPanel.getName());
 		
-		//removing and refreshing gui
+		//removing panel from filterContainer
 		filterPanel.removeAll();
 		dialog.filterContainer.remove(filterPanel);
-		dialog.filterContainer.revalidate();
-		dialog.filterContainer.repaint();
+
+		Main.debug("Num of comp in filter container : "  + dialog.filterContainer.getComponentCount());
+		if (dialog.filterContainer.getComponentCount() == 0) {
+			
+			Main.debug("Here we are");
+			dialog.deleteFilterContainer();
+			
+		} else {
+
+			dialog.filterContainer.revalidate();
+			dialog.filterContainer.repaint();
+			
+		}
 		
 		// if there were no elements in the list 
 		// but then it appeared 
@@ -209,7 +220,6 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			dialog.addButton.setEnabled(true);
 		}
 		
-		Main.debug("The number of elems in the Filters map is equal \n" + filtersMap.size());
 	}
 	
 
