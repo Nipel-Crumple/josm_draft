@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -26,6 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.ImageProcessor;
@@ -104,15 +107,16 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 //		fp.add(filterLabelPanel);
 		fp.setBorder(BorderFactory.createTitledBorder(meta.getString("title")));
 		
-		
 		JsonArray controls = meta.getJsonArray("controls");
+
+//		int height = controls.size() * 70 + 50;
+//		fp.setMaximumSize(new Dimension(300, height));
 		
 		for (int i = 0; i < controls.size(); i++) {
 			
-			int height = controls.size() * 70 + 50;
-			fp.setMaximumSize(new Dimension(300, height));
-			
 			JsonObject temp = controls.getJsonObject(i);
+			Main.debug(temp.toString());
+
 			JComponent component = fp.addGuiElement(temp);
 			
 			if (component != null) {
@@ -120,21 +124,21 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 				if (component instanceof JSlider) {
 					((JSlider) component).addChangeListener(filterListener);
 				} else if (component instanceof JCheckBox) {
-//					((JCheckBox) component).addItemListener(filterListener);
+					((JCheckBox) component).addItemListener(filterListener);
 				}
 				
 				// adding parameters to the filter instance
 				filterState.addParams(temp);
-				
-				fp.add(component);
 			}
 			
 		}
 
+		fp.setNeededHeight(fp.getNeededHeight() + 60);
+		fp.setMaximumSize(new Dimension(300, fp.getNeededHeight()));
+		
 		filter.setState(filterState);
 		
-		JPanel bottomPanel = fp.createBottomPanel(this);
-		fp.add(bottomPanel);
+		fp.createBottomPanel(this);
 		
 		filterListener.setFilterState(filterState);
 		
@@ -205,7 +209,7 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		
 		// removing filter from the filters chain
 		filtersMap.remove(filterId);
-		
+		Main.debug("The number of elems in the Filters map after removing is equal \n" + filtersMap.size());
 		// add filterTitle to the 'choose list' on the top
 		dialog.listModel.addElement(filterPanel.getName());
 		

@@ -61,6 +61,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 	@Override
 	public void layerRemoved(Layer oldLayer) {
 		Main.debug("Layer was removed");
+		isButtonAdded = false;
 	}
 	
 	

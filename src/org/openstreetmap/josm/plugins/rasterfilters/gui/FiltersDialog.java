@@ -54,7 +54,7 @@ public class FiltersDialog {
 			filterContainer.setLayout(new BoxLayout(filterContainer,
 					BoxLayout.Y_AXIS));
 			filterContainer.setBackground(Color.white);
-			// filterHolder.add(Box.createRigidArea(new Dimension(0,10)));
+			
 			filterContainerScroll = new JScrollPane(filterContainer,
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -89,31 +89,35 @@ public class FiltersDialog {
 			FilterInitializer.initFilters();
 
 			frame = new JFrame("Filters");
-			frame.setMinimumSize(new Dimension(320, 400));
-			frame.setPreferredSize(new Dimension(320, 400));
+			frame.setMinimumSize(new Dimension(350, 420));
+			frame.setPreferredSize(new Dimension(350, 420));
 
 			pane = new JPanel();
 			pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
 			pane.setBorder(new EmptyBorder(10, 5, 10, 5));
-			pane.setPreferredSize(new Dimension(280, 400));
+			pane.setPreferredSize(new Dimension(300, 400));
 			pane.setBackground(Color.white);
 
+			JPanel topPanel = new JPanel();
+			topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+			topPanel.setMaximumSize(new Dimension(300, 50));
+			topPanel.setMinimumSize(new Dimension(300, 50));
+			topPanel.setBackground(Color.white);
+			
 			JPanel labelPanel = new JPanel();
 			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
 			labelPanel.setMaximumSize(new Dimension(300, 20));
-			labelPanel.setPreferredSize(new Dimension(300, 20));
-			labelPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 			labelPanel.setBackground(Color.white);
-			labelPanel.setBorder(new EmptyBorder(5, 0, 5, 0));
 
 			JLabel label = new JLabel("Add filter");
 			labelPanel.add(label);
-			pane.add(labelPanel);
+//			pane.add(labelPanel);
 
+			// TODO why after add clicked the top panel is resized???
+			
 			// panel that contains the checkBox and add button
 			JPanel chooseFilterPanel = new JPanel();
-			chooseFilterPanel.setMaximumSize(new Dimension(300, 30));
 			chooseFilterPanel.setMinimumSize(new Dimension(300, 30));
 			chooseFilterPanel.setLayout(new BoxLayout(chooseFilterPanel,
 					BoxLayout.X_AXIS));
@@ -130,7 +134,7 @@ public class FiltersDialog {
 			filterChooser.setMaximumSize(new Dimension(200, 30));
 			chooseFilterPanel.add(filterChooser);
 
-			// empty space area
+			// empty space area between select and add button
 			chooseFilterPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
 			if (listModel.getSize() == 0) {
@@ -145,8 +149,11 @@ public class FiltersDialog {
 
 			chooseFilterPanel.add(addButton);
 
-			pane.add(chooseFilterPanel);
-			pane.add(Box.createRigidArea(new Dimension(300, 20)));
+			topPanel.add(labelPanel);
+			topPanel.add(chooseFilterPanel);
+			pane.add(topPanel);
+//			pane.add(chooseFilterPanel);
+//			pane.add(Box.createRigidArea(new Dimension(0, 20)));
 
 			frame.setContentPane(pane);
 			frame.pack();

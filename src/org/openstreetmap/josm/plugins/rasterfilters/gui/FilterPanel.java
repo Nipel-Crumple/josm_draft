@@ -9,15 +9,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.rmi.server.UID;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,97 +30,110 @@ import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
 
 public class FilterPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	private UID filterId;
+	private int neededHeight;
 
 	public FilterPanel() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setMaximumSize(new Dimension(300, 300));
-		setBorder(BorderFactory.createLineBorder(Color.black));
-		setBackground(Color.yellow);
+//		setMaximumSize(new Dimension(300, 400));
+		setBackground(Color.white);
 	}
 
 	public JComponent addGuiElement(JsonObject json) {
-		Border sliderBorder = new EmptyBorder(5, 5, 5, 5);
 		String type = json.getString("type");
 		
 		if (type.equals("linear_slider")) {
-			JSlider slider = null;
-			addSliderTitle(json.getString("title"));
-			Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
 			
-			JsonArray array = json.getJsonArray("scale");
-			String valueType = json.getString("value_type");
-			if (valueType.equals("integer")) {
-				int minValue = array.getInt(0);
-				int maxValue = array.getInt(1);
-				int initValue = json.getInt("default");
-				
-				slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, initValue);
-				slider.setName(json.getString("name"));
-				slider.setToolTipText(String.valueOf(slider.getValue()));
-				slider.setMinorTickSpacing(maxValue / 4);
-//				slider.setMajorTickSpacing(maxValue / 4);
-			} else if (valueType.equals("float")) {
-				//every value is supplied by 10 to be integer for slider
-				int minValue = array.getInt(0) * 100;
-				int maxValue = array.getInt(1) * 100;
-				double initValue = json.getJsonNumber("default").doubleValue() * 100;
-				double delta = (maxValue - minValue) / 100;
-				for (int i = 0; i <= maxValue; i++) {
-					if ((i % 20) == 0) {
-						labelTable.put(new Integer(i), new JLabel(String.valueOf(i * delta / 100)));
-					}
-				}
-				slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, new Double(initValue).intValue());
-				slider.setName(json.getString("name"));
-				slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
-			}
-
-
-//			if (!labelTable.isEmpty()) {
-//				slider.setLabelTable(labelTable);
-//			}
+			setNeededHeight(getNeededHeight() + 70);
 			
-			slider.setBackground(this.getBackground());
-			slider.setBorder(sliderBorder);
-			slider.setPaintTicks(true);
-			slider.setPaintLabels(true);
-//			Font font = new Font("Arial", Font.PLAIN, 10);
-//			slider.setFont(font);
-//			slider.setAlignmentX(Component.LEFT_ALIGNMENT);
-			slider.setVisible(true);
+			return createSlider(json);
 			
-			this.add(slider);
-			return slider;
 		} else if (type.equals("checkbox")) {
-//			return addFilterLabel(json.getString("title"));
-			return null;
+			
+			setNeededHeight(getNeededHeight() + 30);
+			
+			return createCheckBox(json.getString("title"));
+		} else if (type.equals("select")) {
+			
+			setNeededHeight(getNeededHeight() + 50);
+			
+			return createSelect(json);
 		}
 		return null;
 	}
 
-	public JPanel addFilterLabel(String labelText) {
-		JPanel labelPanel = new JPanel();
-		labelPanel.setMaximumSize(new Dimension(300, 20));
-		labelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+	private JComponent createSelect(JsonObject json) {
 		
-		JLabel filterLabel = new JLabel(labelText);
-		Font labelFont = new Font("Arial", Font.PLAIN, 12);
+		Font font = new Font("Arial", Font.PLAIN, 14);
 		
-		filterLabel.setFont(labelFont);
+		JPanel selectPanel = new JPanel();
 		
-		labelPanel.add(filterLabel);
+		selectPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		selectPanel.setBackground(Color.white);
+		selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
+		selectPanel.setMaximumSize(new Dimension(300, 40));
 		
-		return labelPanel;
+		JLabel selectTitle = new JLabel(json.getString("title"));
+		
+		selectTitle.setFont(font);
+		selectTitle.setBackground(Color.white);
+		
+		JsonArray valuesArray = json.getJsonArray("values");
+		
+		String type = json.getString("value_type");
+		
+		if (type.equals("string")) {
+			
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+			
+			for (int i = 0; i < valuesArray.size(); i++) {
+				model.addElement(valuesArray.getString(i));
+			}
+			
+			JComboBox<String> selectBox = new JComboBox<>(model);
+			selectBox.setMinimumSize(new Dimension(140, 30));
+			selectBox.setBackground(Color.yellow);
+			
+			selectPanel.add(selectTitle);
+			selectPanel.add(Box.createHorizontalGlue());
+			selectPanel.add(selectBox);
+			
+			this.add(selectPanel);
+			
+			return selectPanel;
+		}
+		
+		return null;
+	}
+
+	public JCheckBox createCheckBox(String text) {
+		
+		JPanel checkBoxPanel = new JPanel();
+		checkBoxPanel.setMaximumSize(new Dimension(300, 30));
+		checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.X_AXIS));
+		checkBoxPanel.setBackground(Color.white);
+		
+		JCheckBox checkBox = new JCheckBox(text);
+		Font font = new Font("Arial", Font.PLAIN, 12);
+		
+		checkBox.setFont(font);
+		checkBox.setBackground(Color.white);
+		
+		checkBoxPanel.add(checkBox);
+		
+		this.add(checkBoxPanel);
+		
+		return checkBox;
 	}
 	
-	public JCheckBox createDisableBox(ItemListener listener) {
+	private JCheckBox createDisableBox(ItemListener listener) {
 		JCheckBox disable = new JCheckBox("Disable");
 		Font font = new Font("Arial", Font.PLAIN, 12);
 		
@@ -125,7 +143,7 @@ public class FilterPanel extends JPanel {
 		return disable;
 	}
 	
-	public JButton createRemoveButton(ActionListener listener) {
+	private JButton createRemoveButton(ActionListener listener) {
 		JButton removeButton = new JButton("Delete");
 		Font font = new Font("Arial", Font.PLAIN, 12);
 		
@@ -138,13 +156,19 @@ public class FilterPanel extends JPanel {
 	}
 	
 	public JPanel createBottomPanel(FiltersManager listener) {
+		
+		this.add(Box.createRigidArea(new Dimension(0, 10)));
 		JPanel bottom = new JPanel();
 		
 		bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+		bottom.setMaximumSize(new Dimension(300, 40));
+		bottom.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.gray));
 		
 		bottom.add(createDisableBox(listener));
 		bottom.add(Box.createHorizontalGlue());
 		bottom.add(createRemoveButton(listener));
+		
+		this.add(bottom);
 		
 		return bottom;
 	}
@@ -155,8 +179,7 @@ public class FilterPanel extends JPanel {
 		JPanel sliderLabelPanel = new JPanel();
 		sliderLabelPanel.setMaximumSize(new Dimension(400, 30));
 		sliderLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-//		sliderLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-		sliderLabelPanel.setBackground(Color.green);
+		sliderLabelPanel.setBackground(Color.white);
 
 		JLabel sliderLabel = new JLabel(labelText, JLabel.LEFT);
 		sliderLabel.setFont(labelFont);
@@ -168,6 +191,69 @@ public class FilterPanel extends JPanel {
 		this.add(sliderLabelPanel);
 	}	
 	
+	public JSlider createSlider(JsonObject json) {
+
+		Border sliderBorder = new EmptyBorder(5, 5, 5, 5);
+		
+		addSliderTitle(json.getString("title"));
+		
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+		
+		JsonArray array = json.getJsonArray("scale");
+		
+		String valueType = json.getString("value_type");
+		
+		JSlider slider = null;
+		if (valueType.equals("integer")) {
+			int minValue = array.getInt(0);
+			int maxValue = array.getInt(1);
+			int initValue = json.getInt("default");
+			
+			slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, initValue);
+			slider.setName(json.getString("name"));
+			slider.setToolTipText(String.valueOf(slider.getValue()));
+			slider.setMinorTickSpacing(maxValue / 4);
+//			slider.setMajorTickSpacing(maxValue / 4);
+			
+		} else if (valueType.equals("float")) {
+			
+			//every value is supplied by 10 to be integer for slider
+			int minValue = array.getInt(0) * 100;
+			int maxValue = array.getInt(1) * 100;
+			
+			double initValue = json.getJsonNumber("default").doubleValue() * 100;
+			double delta = (maxValue - minValue) / 100;
+			
+			for (int i = 0; i <= maxValue; i++) {
+				
+				if ((i % 20) == 0) {
+					
+					labelTable.put(new Integer(i), new JLabel(String.valueOf(i * delta / 100)));
+					
+				}
+			}
+			
+			slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, new Double(initValue).intValue());
+			slider.setName(json.getString("name"));
+			slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
+			
+		}
+
+
+//		if (!labelTable.isEmpty()) {
+//			slider.setLabelTable(labelTable);
+//		}
+		
+		slider.setBackground(this.getBackground());
+		slider.setBorder(sliderBorder);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
+		
+		this.add(slider);
+		
+		return slider;
+	}
+	
 	public void setFilterId(UID filterId) {
 		this.filterId = filterId;
 	}
@@ -175,4 +261,13 @@ public class FilterPanel extends JPanel {
 	public UID getFilterId() {
 		return filterId;
 	}
+
+	public int getNeededHeight() {
+		return neededHeight;
+	}
+
+	public void setNeededHeight(int neededHeight) {
+		this.neededHeight = neededHeight;
+	}
+
 }

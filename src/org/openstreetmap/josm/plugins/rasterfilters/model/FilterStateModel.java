@@ -8,6 +8,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.Value;
 
@@ -33,6 +34,7 @@ public class FilterStateModel {
 	}
 	
 	public void addParams(JsonObject json) {
+		Main.debug(/*json.getString("name") + " " +*/ json.getString("value_type"));
 		String parameterName = json.getString("name");
 		String valueType = json.getString("value_type");
 		
