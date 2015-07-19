@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.rasterfilters.model;
 
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -15,11 +17,15 @@ import java.util.Set;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.ImageProcessor;
@@ -87,18 +93,24 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			filter.setId(filterId);
 			filtersMap.put(filterId, filter);
 			
-			// all filters disabled in the beggining by default
-			disabledFilters.add(filter);
+			// all filters enabled in the beggining by default
 		}
 
-		JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
+		/*JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
 		checkBox.setName(meta.getString("name"));
 		checkBox.addItemListener(this);
-		fp.add(checkBox);
+		fp.add(checkBox);*/
+//		JPanel filterLabelPanel = fp.addFilterLabel(meta.getString("title"));
+//		fp.add(filterLabelPanel);
+		fp.setBorder(BorderFactory.createTitledBorder(meta.getString("title")));
+		
 		
 		JsonArray controls = meta.getJsonArray("controls");
 		
 		for (int i = 0; i < controls.size(); i++) {
+			
+			int height = controls.size() * 70 + 50;
+			fp.setMaximumSize(new Dimension(300, height));
 			
 			JsonObject temp = controls.getJsonObject(i);
 			JComponent component = fp.addGuiElement(temp);
@@ -121,7 +133,8 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 
 		filter.setState(filterState);
 		
-		fp.addRemoveButton().addActionListener(this);
+		JPanel bottomPanel = fp.createBottomPanel(this);
+		fp.add(bottomPanel);
 		
 		filterListener.setFilterState(filterState);
 		
@@ -186,7 +199,7 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 	public void actionPerformed(ActionEvent e) {
 		
 		FilterPanel filterPanel = (FilterPanel) ((JButton) e.getSource())
-				.getParent();
+				.getParent().getParent();
 		
 		UID filterId = filterPanel.getFilterId();
 		
@@ -227,9 +240,9 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 	public void itemStateChanged(ItemEvent e) {
 		
 		JCheckBox enableFilter = (JCheckBox) e.getSource();
-		FilterPanel filterPanel = (FilterPanel) enableFilter.getParent();
+		FilterPanel filterPanel = (FilterPanel) enableFilter.getParent().getParent();
 		
-		if (!enableFilter.isSelected()) {
+		if (enableFilter.isSelected()) {
 			
 			UID filterId = filterPanel.getFilterId();
 			disabledFilters.add(filtersMap.get(filterId));

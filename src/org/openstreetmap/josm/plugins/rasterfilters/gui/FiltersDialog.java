@@ -60,6 +60,7 @@ public class FiltersDialog {
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 			pane.add(filterContainerScroll);
+			
 		}
 
 		return filterContainer;
@@ -96,7 +97,7 @@ public class FiltersDialog {
 
 			pane.setBorder(new EmptyBorder(10, 5, 10, 5));
 			pane.setPreferredSize(new Dimension(280, 400));
-			pane.setBackground(Color.blue);
+			pane.setBackground(Color.white);
 
 			JPanel labelPanel = new JPanel();
 			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
@@ -176,8 +177,7 @@ public class FiltersDialog {
 
 					for (ImageProcessor temp : layer.getImageProcessors()) {
 						if (temp instanceof FiltersManager) {
-							panel = ((FiltersManager) temp)
-									.createPanelByTitle(title);
+							panel = ((FiltersManager) temp).createPanelByTitle(title);
 							break;
 						}
 
@@ -194,8 +194,6 @@ public class FiltersDialog {
 				filterContainer = createFilterContainer();
 				filterContainer.add(panel);
 			}
-
-			pane.revalidate();
 
 			listModel.removeElement(title);
 

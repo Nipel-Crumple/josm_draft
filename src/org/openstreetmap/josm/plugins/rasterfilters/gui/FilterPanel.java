@@ -3,15 +3,18 @@ package org.openstreetmap.josm.plugins.rasterfilters.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.rmi.server.UID;
 import java.util.Hashtable;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,6 +25,8 @@ import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
+
 public class FilterPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
@@ -30,11 +35,9 @@ public class FilterPanel extends JPanel {
 	public FilterPanel() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setMaximumSize(new Dimension(350, 400));
-//		setPreferredSize(new Dimension(600, 300));
-		setAlignmentX(Component.CENTER_ALIGNMENT);
+		setMaximumSize(new Dimension(300, 300));
 		setBorder(BorderFactory.createLineBorder(Color.black));
-		setBackground(Color.white);
+		setBackground(Color.yellow);
 	}
 
 	public JComponent addGuiElement(JsonObject json) {
@@ -83,8 +86,8 @@ public class FilterPanel extends JPanel {
 			slider.setBorder(sliderBorder);
 			slider.setPaintTicks(true);
 			slider.setPaintLabels(true);
-			Font font = new Font("Arial", Font.PLAIN, 12);
-			slider.setFont(font);
+//			Font font = new Font("Arial", Font.PLAIN, 10);
+//			slider.setFont(font);
 //			slider.setAlignmentX(Component.LEFT_ALIGNMENT);
 			slider.setVisible(true);
 			
@@ -97,41 +100,73 @@ public class FilterPanel extends JPanel {
 		return null;
 	}
 
-	public JCheckBox addFilterLabel(String labelText) {
-		Border labelBorder = new EmptyBorder(15, 20, 0, 0);
-		Font labelFont = new Font("Arial", Font.PLAIN, 14);
-
-		JCheckBox checkLabel = new JCheckBox(labelText);
-		checkLabel.setFont(labelFont);
-		checkLabel.setFocusable(false);
-		checkLabel.setBackground(this.getBackground());
-		checkLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		checkLabel.setBorder(labelBorder);
-
-		return checkLabel;
+	public JPanel addFilterLabel(String labelText) {
+		JPanel labelPanel = new JPanel();
+		labelPanel.setMaximumSize(new Dimension(300, 20));
+		labelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		JLabel filterLabel = new JLabel(labelText);
+		Font labelFont = new Font("Arial", Font.PLAIN, 12);
+		
+		filterLabel.setFont(labelFont);
+		
+		labelPanel.add(filterLabel);
+		
+		return labelPanel;
+	}
+	
+	public JCheckBox createDisableBox(ItemListener listener) {
+		JCheckBox disable = new JCheckBox("Disable");
+		Font font = new Font("Arial", Font.PLAIN, 12);
+		
+		disable.addItemListener(listener);
+		disable.setFont(font);
+		
+		return disable;
+	}
+	
+	public JButton createRemoveButton(ActionListener listener) {
+		JButton removeButton = new JButton("Delete");
+		Font font = new Font("Arial", Font.PLAIN, 12);
+		
+		removeButton.setFont(font);
+		removeButton.setName("delete");
+		
+		removeButton.addActionListener(listener);
+		
+		return removeButton;
+	}
+	
+	public JPanel createBottomPanel(FiltersManager listener) {
+		JPanel bottom = new JPanel();
+		
+		bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+		
+		bottom.add(createDisableBox(listener));
+		bottom.add(Box.createHorizontalGlue());
+		bottom.add(createRemoveButton(listener));
+		
+		return bottom;
 	}
 
 	private void addSliderTitle(String labelText) {
-		Border labelBorder = new EmptyBorder(5, 5, 0, 0);
 		Font labelFont = new Font("Arial", Font.PLAIN, 14);
+		
+		JPanel sliderLabelPanel = new JPanel();
+		sliderLabelPanel.setMaximumSize(new Dimension(400, 30));
+		sliderLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+//		sliderLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
+		sliderLabelPanel.setBackground(Color.green);
 
-		JLabel sliderLabel = new JLabel(labelText);
+		JLabel sliderLabel = new JLabel(labelText, JLabel.LEFT);
 		sliderLabel.setFont(labelFont);
-		sliderLabel.setFocusable(false);
-		sliderLabel.setBackground(this.getBackground());
 		sliderLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		sliderLabel.setBorder(labelBorder);
 		sliderLabel.setVisible(true);
 
-		this.add(sliderLabel);
+		sliderLabelPanel.add(sliderLabel);
+		
+		this.add(sliderLabelPanel);
 	}	
-	
-	public JButton addRemoveButton() {
-		JButton removeButton = new JButton("Delete");
-		removeButton.setName("delete");
-		this.add(removeButton);
-		return removeButton;
-	}
 	
 	public void setFilterId(UID filterId) {
 		this.filterId = filterId;
