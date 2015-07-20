@@ -152,6 +152,9 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 	public void filterStateChanged(UID filterId, FilterStateModel filterState) {
 		
 		filtersMap.get(filterId).changeFilterState(filterState.encodeJson());
+		
+		Main.map.mapView.getActiveLayer().setFilterStateChanged();
+		
 		Main.debug("Current state" + filterState.encodeJson().toString());
 		
 	}	
@@ -205,7 +208,7 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		
 		// removing filter from the filters chain
 		filtersMap.remove(filterId);
-//		Main.debug("The number of elems in the Filters map after removing is equal \n" + filtersMap.size());
+		
 		// add filterTitle to the 'choose list' on the top
 		dialog.listModel.addElement(filterPanel.getName());
 		
@@ -213,7 +216,6 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		filterPanel.removeAll();
 		dialog.filterContainer.remove(filterPanel);
 
-//		Main.debug("Num of comp in filter container : "  + dialog.filterContainer.getComponentCount());
 		if (dialog.filterContainer.getComponentCount() == 0) {
 			
 			dialog.deleteFilterContainer();
@@ -232,6 +234,8 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			dialog.addButton.setEnabled(true);
 		}
 		
+		Main.map.mapView.getActiveLayer().setFilterStateChanged();
+		
 	}
 	
 
@@ -246,10 +250,14 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			UID filterId = filterPanel.getFilterId();
 			disabledFilters.add(filtersMap.get(filterId));
 			
+			Main.map.mapView.getActiveLayer().setFilterStateChanged();
+			
 		} else {
 			
 			UID filterId = filterPanel.getFilterId();
 			disabledFilters.remove(filtersMap.get(filterId));
+			
+			Main.map.mapView.getActiveLayer().setFilterStateChanged();
 		
 		}
 	}	

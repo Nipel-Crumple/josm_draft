@@ -45,6 +45,7 @@ public class FiltersDialog {
 	public JButton addButton;
 	public DefaultComboBoxModel<String> listModel;
 	public JPanel filterContainer;
+	public Layer activeLayer;
 	public JScrollPane filterContainerScroll;
 
 	public JPanel createFilterContainer() {
@@ -174,7 +175,7 @@ public class FiltersDialog {
 
 			String title = (String) listModel.getSelectedItem();
 			JPanel panel = null;
-			Layer activeLayer = Main.map.mapView.getActiveLayer();
+			activeLayer = Main.map.mapView.getActiveLayer();
 
 			if (activeLayer instanceof ImageryLayer) {
 
