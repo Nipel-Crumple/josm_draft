@@ -26,8 +26,6 @@ public class FilterReader {
 
 		File[] files = findAllMeta(directory);
 		
-		Main.debug("LENGTH " + files.length);
-		
 		List<JsonObject> filtersMeta = new ArrayList<>();
 
 		for (File temp : files) {
@@ -65,9 +63,11 @@ public class FilterReader {
 	}
 
 	public File[] findAllMeta(File directory) {
-		Main.debug(directory.getAbsolutePath());
+		
 		if (directory.isDirectory()) {
+			
 			FileFilter filter = new FileFilter() {
+				
 				@Override
 				public boolean accept(File pathname) {
 					String regex = "\\w*\\.rf";
@@ -75,6 +75,7 @@ public class FilterReader {
 					Matcher m = p.matcher(pathname.getName());
 					return m.matches();
 				}
+				
 			};
 
 			return directory.listFiles(filter);

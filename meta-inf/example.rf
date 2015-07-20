@@ -33,17 +33,18 @@
                 },
                 {
                         "type": "checkbox",
-                        "name": "poploe",
-                        "title": "Poploe",
+                        "name": "fix",
+                        "title": "Fix",
                         "value_type": "boolean",
-                        "default": "false"
+                        "default": false
                 },
                 {
                         "type": "select",
                         "name": "algorithm",
                         "title": "Algorithm",
                         "value_type": "string",
-                        "values": ["Cubick", "Rubick", "Gauss", "Schmauss"]
+                        "values": ["Cubick", "Rubick", "Gauss", "Schmauss"],
+                        "default": "Gauss"
                 }
         ]
 }

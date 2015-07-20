@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.rasterfilters;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -52,7 +53,9 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 		if (!isButtonAdded) {
 			LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
 			ShowLayerFiltersDialog action = new ShowLayerFiltersDialog();
-			((JPanel)dialog.getComponent(2)).add(new SideButton(action, false));
+			SideButton filterButton = new SideButton(action, false);
+			
+			((JPanel)dialog.getComponent(2)).add(filterButton);
 			Main.debug("My name is" + dialog.getClass().getCanonicalName());
 			isButtonAdded = true;
 		}

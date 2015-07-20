@@ -1,11 +1,11 @@
 package org.openstreetmap.josm.plugins.rasterfilters.values;
 
-public class SelectedValue<T> implements Value<T> {
+public class SelectValue<T> implements Value<T> {
 
 	private T selectedItem;
 	private String parameterName;
 	
-	public SelectedValue(T value, String parameterName) {
+	public SelectValue(String parameterName, T value) {
 		this.selectedItem = value;
 		this.parameterName = parameterName;
 	}

@@ -5,7 +5,7 @@ public class BooleanValue implements Value<Boolean> {
 	private Boolean value;
 	private String parameterName;
 
-	public BooleanValue(Boolean value, String parameterName) {
+	public BooleanValue(String parameterName, Boolean value) {
 		this.value = value;
 		this.parameterName = parameterName;
 	}

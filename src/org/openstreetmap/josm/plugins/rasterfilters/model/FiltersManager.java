@@ -19,8 +19,10 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -99,23 +101,14 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 			// all filters enabled in the beggining by default
 		}
 
-		/*JCheckBox checkBox = fp.addFilterLabel(meta.getString("title"));
-		checkBox.setName(meta.getString("name"));
-		checkBox.addItemListener(this);
-		fp.add(checkBox);*/
-//		JPanel filterLabelPanel = fp.addFilterLabel(meta.getString("title"));
-//		fp.add(filterLabelPanel);
 		fp.setBorder(BorderFactory.createTitledBorder(meta.getString("title")));
 		
 		JsonArray controls = meta.getJsonArray("controls");
-
-//		int height = controls.size() * 70 + 50;
-//		fp.setMaximumSize(new Dimension(300, height));
 		
 		for (int i = 0; i < controls.size(); i++) {
 			
 			JsonObject temp = controls.getJsonObject(i);
-			Main.debug(temp.toString());
+//			Main.debug(temp.toString());
 
 			JComponent component = fp.addGuiElement(temp);
 			
@@ -125,6 +118,8 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 					((JSlider) component).addChangeListener(filterListener);
 				} else if (component instanceof JCheckBox) {
 					((JCheckBox) component).addItemListener(filterListener);
+				} else if (component instanceof JComboBox) {
+					((JComboBox<String>) component).addActionListener(filterListener);
 				}
 				
 				// adding parameters to the filter instance
@@ -157,6 +152,7 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 	public void filterStateChanged(UID filterId, FilterStateModel filterState) {
 		
 		filtersMap.get(filterId).changeFilterState(filterState.encodeJson());
+		Main.debug("Current state" + filterState.encodeJson().toString());
 		
 	}	
 	
@@ -209,7 +205,7 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		
 		// removing filter from the filters chain
 		filtersMap.remove(filterId);
-		Main.debug("The number of elems in the Filters map after removing is equal \n" + filtersMap.size());
+//		Main.debug("The number of elems in the Filters map after removing is equal \n" + filtersMap.size());
 		// add filterTitle to the 'choose list' on the top
 		dialog.listModel.addElement(filterPanel.getName());
 		
@@ -217,10 +213,9 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		filterPanel.removeAll();
 		dialog.filterContainer.remove(filterPanel);
 
-		Main.debug("Num of comp in filter container : "  + dialog.filterContainer.getComponentCount());
+//		Main.debug("Num of comp in filter container : "  + dialog.filterContainer.getComponentCount());
 		if (dialog.filterContainer.getComponentCount() == 0) {
 			
-			Main.debug("Here we are");
 			dialog.deleteFilterContainer();
 			
 		} else {
