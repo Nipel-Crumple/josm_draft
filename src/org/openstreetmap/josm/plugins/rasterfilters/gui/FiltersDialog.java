@@ -46,7 +46,14 @@ public class FiltersDialog {
 	public DefaultComboBoxModel<String> listModel;
 	public JPanel filterContainer;
 	public Layer activeLayer;
+	public FiltersManager fm;
 	public JScrollPane filterContainerScroll;
+	
+	public FiltersDialog(ImageryLayer layer) {
+		this.activeLayer = layer;
+		this.fm = new FiltersManager();
+		((ImageryLayer)this.activeLayer).addImageProcessor(fm);
+	}
 
 	public JPanel createFilterContainer() {
 		if (filterContainer == null) {
@@ -175,28 +182,8 @@ public class FiltersDialog {
 
 			String title = (String) listModel.getSelectedItem();
 			JPanel panel = null;
-			activeLayer = Main.map.mapView.getActiveLayer();
-
-			if (activeLayer instanceof ImageryLayer) {
-
-				ImageryLayer layer = (ImageryLayer) activeLayer;
-
-				if (layer.getImageProcessors().size() > 0) {
-
-					for (ImageProcessor temp : layer.getImageProcessors()) {
-						if (temp instanceof FiltersManager) {
-							panel = ((FiltersManager) temp).createPanelByTitle(title);
-							break;
-						}
-
-					}
-
-				} else {
-					FiltersManager fm = createFilterManager();
-					layer.addImageProcessor(fm);
-					panel = fm.createPanelByTitle(title);
-				}
-			}
+			
+			panel = fm.createPanelByTitle(title);
 
 			if (panel != null) {
 				filterContainer = createFilterContainer();
@@ -211,5 +198,4 @@ public class FiltersDialog {
 
 		}
 	}
-
 }

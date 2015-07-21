@@ -17,21 +17,20 @@ import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
+import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
+import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 	
-	private boolean isButtonAdded = false;
+	private SideButton filterButton;
+	private ShowLayerFiltersDialog action;
 
 	public RasterFiltersPlugin(PluginInformation info) {
 		super(info);
 		Main.debug("Loading RasterFiltersPlugin");
-		getLayerList();
-	}
-	
-	public void getLayerList() {
 	}
 	
 	@Override
@@ -50,21 +49,42 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	@Override
 	public void layerAdded(Layer newLayer) {
-		if (!isButtonAdded) {
+		
+		if (filterButton == null) {
+			
 			LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
-			ShowLayerFiltersDialog action = new ShowLayerFiltersDialog();
-			SideButton filterButton = new SideButton(action, false);
+			action = new ShowLayerFiltersDialog();
+			
+			if (newLayer instanceof ImageryLayer) {
+				filterButton = new SideButton(action, false);
+				filterButton.setEnabled(true);
+			} else {
+				filterButton = new SideButton(action, false);
+				filterButton.setEnabled(false);
+			}
 			
 			((JPanel)dialog.getComponent(2)).add(filterButton);
 			Main.debug("My name is" + dialog.getClass().getCanonicalName());
-			isButtonAdded = true;
 		}
+		
+		if (newLayer instanceof ImageryLayer) {
+			FiltersDialog dialog = new FiltersDialog((ImageryLayer) newLayer);
+			action.addFiltersDialog(dialog);
+		}
+		
 	}
 
 	@Override
 	public void layerRemoved(Layer oldLayer) {
-		Main.debug("Layer was removed");
-		isButtonAdded = false;
+		Main.debug("Layer"+ oldLayer.getName() + "was removed");
+		
+		for (FiltersDialog dialog : action.dialogs) {
+			
+			if (dialog.activeLayer.equals(oldLayer)) {
+				action.removeFiltersDialog(dialog);
+			}
+			
+		}
 	}
 	
 	
