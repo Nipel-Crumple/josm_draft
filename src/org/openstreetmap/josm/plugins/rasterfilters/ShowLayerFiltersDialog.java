@@ -23,20 +23,6 @@ import org.openstreetmap.josm.tools.ImageProvider;
 public final class ShowLayerFiltersDialog extends AbstractAction implements LayerAction {
 	
 	public List<FiltersDialog> dialogs = new ArrayList<>();
-    private transient Layer layer;
-    /**
-     * Creates a {@link ShowLayerFiltersDialog} which allows to choose and
-     * apply it to the layer
-     *
-     * @param layer  the layer. Must not be null.
-     * @throws IllegalArgumentException if layer is null
-     */
-    public ShowLayerFiltersDialog(Layer layer) {
-        this();
-        putValue(NAME, tr("Filters"));
-        CheckParameterUtil.ensureParameterNotNull(layer, "layer");
-        this.layer = layer;
-    }
 
     /**
      * Creates a {@link ShowHideLayerAction} which will toggle the visibility of
@@ -63,9 +49,12 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
     	
     	if (layer instanceof ImageryLayer) {
     		for (FiltersDialog temp : dialogs) {
+    			
     			if (temp.activeLayer.equals(layer)) {
     				try {
+    					
 						temp.createAndShowGUI();
+						
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -73,6 +62,7 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
     				
     				break;
     			}
+    			
     		}
     	}
     }

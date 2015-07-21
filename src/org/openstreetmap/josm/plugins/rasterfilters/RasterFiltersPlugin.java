@@ -36,6 +36,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 	@Override
 	public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
 		Main.debug("Initialising RasterFiltersPlugin in mapFrame!");
+		
 		if (Main.isDisplayingMapView()) {
 			Main.map.mapView.addLayerChangeListener(this);
 		}
@@ -64,7 +65,8 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 			}
 			
 			((JPanel)dialog.getComponent(2)).add(filterButton);
-			Main.debug("My name is" + dialog.getClass().getCanonicalName());
+
+			Main.debug("Layer"+ newLayer.getName() + "was added");
 		}
 		
 		if (newLayer instanceof ImageryLayer) {
