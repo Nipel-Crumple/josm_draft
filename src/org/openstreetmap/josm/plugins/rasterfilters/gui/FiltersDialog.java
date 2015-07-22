@@ -45,14 +45,14 @@ public class FiltersDialog {
 	public JButton addButton;
 	public DefaultComboBoxModel<String> listModel;
 	public JPanel filterContainer;
-	public Layer activeLayer;
+	public Layer layer;
 	public FiltersManager fm;
 	public JScrollPane filterContainerScroll;
 	
 	public FiltersDialog(ImageryLayer layer) {
-		this.activeLayer = layer;
-		this.fm = new FiltersManager();
-		((ImageryLayer)this.activeLayer).addImageProcessor(fm);
+		this.layer = layer;
+		this.fm = new FiltersManager(this);
+		((ImageryLayer) layer).addImageProcessor(fm);
 	}
 
 	public JPanel createFilterContainer() {

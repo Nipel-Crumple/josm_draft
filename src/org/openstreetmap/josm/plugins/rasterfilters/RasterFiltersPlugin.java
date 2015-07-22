@@ -13,6 +13,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.MapFrameListener;
+import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
@@ -21,6 +22,7 @@ import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
+import org.openstreetmap.josm.plugins.rasterfilters.actions.ShowLayerFiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
@@ -38,7 +40,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 		Main.debug("Initialising RasterFiltersPlugin in mapFrame!");
 		
 		if (Main.isDisplayingMapView()) {
-			Main.map.mapView.addLayerChangeListener(this);
+			MapView.addLayerChangeListener(this);
 		}
 	}
 
@@ -54,7 +56,11 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 		if (filterButton == null) {
 			
 			LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
-			action = new ShowLayerFiltersDialog();
+			
+			if (action == null) {
+				action = new ShowLayerFiltersDialog();
+				Main.debug("action is null: " + String.valueOf(action == null));
+			}
 			
 			if (newLayer instanceof ImageryLayer) {
 				filterButton = new SideButton(action, false);
@@ -65,8 +71,10 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 			}
 			
 			((JPanel)dialog.getComponent(2)).add(filterButton);
+			
+			Main.debug(((JPanel)dialog.getComponent(2)).getComponent(1).toString());
 
-			Main.debug("Layer"+ newLayer.getName() + "was added");
+			Main.debug("Layer "+ newLayer.getName() + "was added");
 		}
 		
 		if (newLayer instanceof ImageryLayer) {
@@ -78,13 +86,24 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	@Override
 	public void layerRemoved(Layer oldLayer) {
-		Main.debug("Layer"+ oldLayer.getName() + "was removed");
+		Main.debug("Layer "+ oldLayer.getName() + "was removed");
 		
-		for (FiltersDialog dialog : action.dialogs) {
-			
-			if (dialog.activeLayer.equals(oldLayer)) {
-				action.removeFiltersDialog(dialog);
+		if (Main.map.mapView.getAllLayersAsList().size() != 0) {
+		
+			for (FiltersDialog dialog : action.dialogs) {
+				
+				if (dialog.layer.equals(oldLayer)) {
+					action.removeFiltersDialog(dialog);
+					((ImageryLayer) oldLayer).removeImageProcessor(dialog.fm);
+				}
+				
 			}
+		} else {
+			
+			FiltersDialog dialog = action.dialogs.get(0);
+			((ImageryLayer) oldLayer).removeImageProcessor(dialog.fm);
+			action.dialogs.clear();
+			filterButton = null;
 			
 		}
 	}

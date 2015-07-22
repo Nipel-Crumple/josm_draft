@@ -50,9 +50,6 @@ public class FiltersManager implements StateChangeListener, ImageProcessor, Acti
 		this.dialog = dialog;
 	}
 	
-	public FiltersManager() {
-		
-	}
 	private JPanel createFilterWithPanel(JsonObject meta) {
 		
 		FilterPanel fp = new FilterPanel();
