@@ -7,14 +7,12 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 
 import com.jhlabs.image.ChannelMixFilter;
 
 public class ChannelMixFilterImpl implements Filter {
 
 	private ChannelMixFilter mix = new ChannelMixFilter();
-	private FilterStateModel state;
 	private int red, green, blue;
 	private UID id;
 
@@ -24,12 +22,6 @@ public class ChannelMixFilterImpl implements Filter {
 		mix.setIntoG(green);
 		mix.setIntoB(blue);
 		return mix.filter(img, null);
-	}
-
-	@Override
-	public void setState(FilterStateModel newState) {
-		this.state = newState;
-		changeFilterState(state.encodeJson());
 	}
 
 	@Override
@@ -51,6 +43,7 @@ public class ChannelMixFilterImpl implements Filter {
 		return "from ChannelMix: \n" + json.toString();
 	}
 
+	@Override
 	public boolean changeFilterState(JsonObject filterState) {
 
 		if (filterState != null) {

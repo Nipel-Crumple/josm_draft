@@ -17,7 +17,7 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.rasterfilters.actions.ShowLayerFiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
-public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
+public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 	private SideButton filterButton;
 	private ShowLayerFiltersDialog action;
@@ -51,7 +51,8 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 		if (filterButton == null) {
 
-			LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
+			LayerListDialog dialog = Main.map
+					.getToggleDialog(LayerListDialog.class);
 
 			if (action == null) {
 				action = new ShowLayerFiltersDialog();
@@ -65,10 +66,11 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 				filterButton.setEnabled(false);
 			}
 
-			JPanel buttonRowPanel = (JPanel) ((JPanel)dialog.getComponent(2)).getComponent(0);
+			JPanel buttonRowPanel = (JPanel) ((JPanel) dialog.getComponent(2))
+					.getComponent(0);
 			buttonRowPanel.add(filterButton);
 
-			Main.debug("Layer "+ newLayer.getName() + "was added");
+			Main.debug("Layer " + newLayer.getName() + "was added");
 		}
 
 		if (newLayer instanceof ImageryLayer) {
@@ -80,7 +82,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	@Override
 	public void layerRemoved(Layer oldLayer) {
-		Main.debug("Layer "+ oldLayer.getName() + "was removed");
+		Main.debug("Layer " + oldLayer.getName() + "was removed");
 
 		if (oldLayer instanceof ImageryLayer) {
 			FiltersDialog dialog = action.getDialogByLayer(oldLayer);
@@ -97,7 +99,4 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 		}
 	}
 
-
 }
-
-

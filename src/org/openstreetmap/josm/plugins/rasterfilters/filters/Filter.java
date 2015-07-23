@@ -3,13 +3,13 @@ package org.openstreetmap.josm.plugins.rasterfilters.filters;
 import java.awt.image.BufferedImage;
 import java.rmi.server.UID;
 
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
+import javax.json.JsonObject;
 
 public interface Filter {
 
-	public BufferedImage applyFilter(BufferedImage img);
+	public boolean changeFilterState(JsonObject filterState);
 
-	public void setState(FilterStateModel state);
+	public BufferedImage applyFilter(BufferedImage img);
 
 	public void setId(UID id);
 }

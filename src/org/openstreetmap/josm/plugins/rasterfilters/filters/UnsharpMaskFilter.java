@@ -7,14 +7,12 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 
 import com.jhlabs.image.UnsharpFilter;
 
 public class UnsharpMaskFilter implements Filter {
 
 	private UnsharpFilter unsharp = new UnsharpFilter();
-	private FilterStateModel state;
 	private float amount;
 	private int size;
 	private UID id;
@@ -33,16 +31,11 @@ public class UnsharpMaskFilter implements Filter {
 	}
 
 	@Override
-	public void setState(FilterStateModel newState) {
-		this.state = newState;
-		changeFilterState(state.encodeJson());
-	}
-
-	@Override
 	public void setId(UID id) {
 		this.id = id;
 	}
 
+	@Override
 	public boolean changeFilterState(JsonObject filterState) {
 		if (filterState != null) {
 

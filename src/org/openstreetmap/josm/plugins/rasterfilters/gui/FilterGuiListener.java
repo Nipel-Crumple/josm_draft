@@ -23,7 +23,7 @@ import org.openstreetmap.josm.plugins.rasterfilters.values.SelectValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 
 public class FilterGuiListener implements ChangeListener, ItemListener,
-		ActionListener, FilterStateOwner {
+ActionListener, FilterStateOwner {
 
 	private StateChangeListener handler;
 	private FilterStateModel filterState;
@@ -51,7 +51,8 @@ public class FilterGuiListener implements ChangeListener, ItemListener,
 
 		if (filterState.getParams().containsKey(parameterName)) {
 
-			SliderValue<Number> value = (SliderValue<Number>) filterState.getParams().get(parameterName);
+			SliderValue<Number> value = (SliderValue<Number>) filterState
+					.getParams().get(parameterName);
 
 			if (value.isDouble()) {
 				value.setValue((double) slider.getValue() / 100);
@@ -91,15 +92,16 @@ public class FilterGuiListener implements ChangeListener, ItemListener,
 
 		String parameterName = box.getName();
 
-		BooleanValue value = (BooleanValue) filterState.getParams().get(parameterName);
+		BooleanValue value = (BooleanValue) filterState.getParams().get(
+				parameterName);
 		Main.debug(value.toString());
 		value.setValue(box.isSelected());
 		Main.debug(box.isSelected() + box.getName());
-		
+
 		filterState.getParams().put(parameterName, value);
-		
+
 		handler.filterStateChanged(filterId, filterState);
-		
+
 	}
 
 	@Override
@@ -108,7 +110,8 @@ public class FilterGuiListener implements ChangeListener, ItemListener,
 		JComboBox<String> box = (JComboBox<String>) e.getSource();
 
 		String parameterName = box.getName();
-		SelectValue<String> value = (SelectValue<String>) filterState.getParams().get(parameterName);
+		SelectValue<String> value = (SelectValue<String>) filterState
+				.getParams().get(parameterName);
 
 		ComboBoxModel<String> model = box.getModel();
 		String selectedItem = (String) model.getSelectedItem();

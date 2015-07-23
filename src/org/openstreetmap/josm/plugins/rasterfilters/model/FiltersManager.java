@@ -121,7 +121,7 @@ ActionListener, ItemListener {
 		fp.setNeededHeight(fp.getNeededHeight() + 60);
 		fp.setMaximumSize(new Dimension(300, fp.getNeededHeight()));
 
-		filter.setState(filterState);
+		filter.changeFilterState(filterState.encodeJson());
 
 		fp.createBottomPanel(this);
 
@@ -142,7 +142,7 @@ ActionListener, ItemListener {
 	@Override
 	public void filterStateChanged(UID filterId, FilterStateModel filterState) {
 
-		filtersMap.get(filterId).setState(filterState);
+		filtersMap.get(filterId).changeFilterState(filterState.encodeJson());
 
 		Main.map.mapView.getActiveLayer().setFilterStateChanged();
 
