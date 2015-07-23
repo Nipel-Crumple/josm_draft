@@ -1,23 +1,15 @@
 package org.openstreetmap.josm.plugins.rasterfilters;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.Container;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapFrame;
-import org.openstreetmap.josm.gui.MapFrameListener;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
-import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.Plugin;
@@ -26,7 +18,7 @@ import org.openstreetmap.josm.plugins.rasterfilters.actions.ShowLayerFiltersDial
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
-	
+
 	private SideButton filterButton;
 	private ShowLayerFiltersDialog action;
 
@@ -34,11 +26,11 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 		super(info);
 		Main.debug("Loading RasterFiltersPlugin");
 	}
-	
+
 	@Override
 	public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
 		Main.debug("Initialising RasterFiltersPlugin in mapFrame!");
-		
+
 		if (Main.isDisplayingMapView()) {
 			MapView.addLayerChangeListener(this);
 		}
@@ -46,22 +38,25 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 
 	@Override
 	public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-		// TODO Auto-generated method stub
-		
+		if (!(newLayer instanceof ImageryLayer)) {
+			filterButton.setEnabled(false);
+		} else {
+			filterButton.setEnabled(true);
+		}
+
 	}
 
 	@Override
 	public void layerAdded(Layer newLayer) {
-		
+
 		if (filterButton == null) {
-			
+
 			LayerListDialog dialog = Main.map.getToggleDialog(LayerListDialog.class);
-			
+
 			if (action == null) {
 				action = new ShowLayerFiltersDialog();
-				Main.debug("action is null: " + String.valueOf(action == null));
 			}
-			
+
 			if (newLayer instanceof ImageryLayer) {
 				filterButton = new SideButton(action, false);
 				filterButton.setEnabled(true);
@@ -69,46 +64,40 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener{
 				filterButton = new SideButton(action, false);
 				filterButton.setEnabled(false);
 			}
-			
-			((JPanel)dialog.getComponent(2)).add(filterButton);
-			
-			Main.debug(((JPanel)dialog.getComponent(2)).getComponent(1).toString());
+
+			JPanel buttonRowPanel = (JPanel) ((JPanel)dialog.getComponent(2)).getComponent(0);
+			buttonRowPanel.add(filterButton);
 
 			Main.debug("Layer "+ newLayer.getName() + "was added");
 		}
-		
+
 		if (newLayer instanceof ImageryLayer) {
 			FiltersDialog dialog = new FiltersDialog((ImageryLayer) newLayer);
 			action.addFiltersDialog(dialog);
 		}
-		
+
 	}
 
 	@Override
 	public void layerRemoved(Layer oldLayer) {
 		Main.debug("Layer "+ oldLayer.getName() + "was removed");
-		
-		if (Main.map.mapView.getAllLayersAsList().size() != 0) {
-		
-			for (FiltersDialog dialog : action.dialogs) {
-				
-				if (dialog.layer.equals(oldLayer)) {
-					action.removeFiltersDialog(dialog);
-					((ImageryLayer) oldLayer).removeImageProcessor(dialog.fm);
-				}
-				
-			}
-		} else {
-			
-			FiltersDialog dialog = action.dialogs.get(0);
+
+		if (oldLayer instanceof ImageryLayer) {
+			FiltersDialog dialog = action.getDialogByLayer(oldLayer);
 			((ImageryLayer) oldLayer).removeImageProcessor(dialog.fm);
-			action.dialogs.clear();
+			action.removeFiltersDialog(dialog);
+		}
+
+		if (Main.map.mapView.getAllLayersAsList().size() == 0) {
+
+			Container container = filterButton.getParent();
+			container.remove(filterButton);
 			filterButton = null;
-			
+
 		}
 	}
-	
-	
+
+
 }
 
 
