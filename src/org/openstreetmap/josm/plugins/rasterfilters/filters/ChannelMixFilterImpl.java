@@ -1,11 +1,8 @@
 package org.openstreetmap.josm.plugins.rasterfilters.filters;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.rmi.server.UID;
 
-import javax.imageio.ImageIO;
 import javax.json.Json;
 import javax.json.JsonObject;
 
@@ -22,7 +19,40 @@ public class ChannelMixFilterImpl implements Filter {
 	private UID id;
 
 	@Override
+	public BufferedImage applyFilter(BufferedImage img) {
+		mix.setIntoR(red);
+		mix.setIntoG(green);
+		mix.setIntoB(blue);
+		return mix.filter(img, null);
+	}
+
+	@Override
+	public void setState(FilterStateModel newState) {
+		this.state = newState;
+		changeFilterState(state.encodeJson());
+	}
+
+	@Override
+	public void setId(UID id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		JsonObject json = Json
+				.createObjectBuilder()
+				.add("red",
+						Json.createObjectBuilder().add("value", red).build())
+						.add("green",
+								Json.createObjectBuilder().add("value", green).build())
+								.add("blue",
+										Json.createObjectBuilder().add("value", blue).build())
+										.build();
+		return "from ChannelMix: \n" + json.toString();
+	}
+
 	public boolean changeFilterState(JsonObject filterState) {
+
 		if (filterState != null) {
 
 			// new value of rgb params
@@ -41,39 +71,6 @@ public class ChannelMixFilterImpl implements Filter {
 		}
 
 		return false;
-	}
-
-	@Override
-	public BufferedImage applyFilter(BufferedImage img) {
-		mix.setIntoR(red);
-		mix.setIntoG(green);
-		mix.setIntoB(blue);
-		return mix.filter(img, null);
-	}
-
-	@Override
-	public void setState(FilterStateModel state) {
-		this.state = state;
-		changeFilterState(state.encodeJson());
-	}
-
-	@Override
-	public void setId(UID id) {
-		this.id = id;
-	}
-
-	@Override
-	public String toString() {
-		JsonObject json = Json
-				.createObjectBuilder()
-				.add("red",
-						Json.createObjectBuilder().add("value", red).build())
-				.add("green",
-						Json.createObjectBuilder().add("value", green).build())
-				.add("blue",
-						Json.createObjectBuilder().add("value", blue).build())
-				.build();
-		return "from ChannelMix: \n" + json.toString();
 	}
 
 	public void setBlue(int blue) {

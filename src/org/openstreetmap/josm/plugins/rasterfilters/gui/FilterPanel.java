@@ -5,20 +5,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.rmi.server.UID;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,7 +26,6 @@ import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
 
 public class FilterPanel extends JPanel {
@@ -61,9 +56,9 @@ public class FilterPanel extends JPanel {
 
 			JCheckBox checkBox = createCheckBox(json.getString("title"));
 			checkBox.setName(json.getString("name"));
-			
+
 			return checkBox;
-			
+
 		} else if (type.equals("select")) {
 
 			setNeededHeight(getNeededHeight() + 50);
@@ -92,7 +87,7 @@ public class FilterPanel extends JPanel {
 		JsonArray valuesArray = json.getJsonArray("values");
 
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-		
+
 		model.setSelectedItem(json.getString("default"));
 
 		for (int i = 0; i < valuesArray.size(); i++) {

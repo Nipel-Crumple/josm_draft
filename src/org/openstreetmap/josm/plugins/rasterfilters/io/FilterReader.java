@@ -16,8 +16,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import org.openstreetmap.josm.Main;
-
 public class FilterReader {
 
 	public List<JsonObject> readMetaInf(String dir) {
@@ -25,7 +23,7 @@ public class FilterReader {
 		File directory = new File(dir);
 
 		File[] files = findAllMeta(directory);
-		
+
 		List<JsonObject> filtersMeta = new ArrayList<>();
 
 		for (File temp : files) {
@@ -39,7 +37,7 @@ public class FilterReader {
 			}
 			BufferedReader buff = new BufferedReader(fileReader);
 			String line;
-	
+
 			try {
 				while ((line = buff.readLine()) != null) {
 					stringBuilder.append(line);
@@ -50,12 +48,12 @@ public class FilterReader {
 			}
 			// json string with META-INFO
 			json = stringBuilder.toString();
-	
+
 			// Creating reader for parsing json META-INFO string
 			JsonReader reader = Json.createReader(new StringReader(json));
-	
+
 			JsonObject obj = reader.readObject();
-	
+
 			filtersMeta.add(obj);
 		}
 
@@ -63,11 +61,11 @@ public class FilterReader {
 	}
 
 	public File[] findAllMeta(File directory) {
-		
+
 		if (directory.isDirectory()) {
-			
+
 			FileFilter filter = new FileFilter() {
-				
+
 				@Override
 				public boolean accept(File pathname) {
 					String regex = "\\w*\\.rf";
@@ -75,7 +73,7 @@ public class FilterReader {
 					Matcher m = p.matcher(pathname.getName());
 					return m.matches();
 				}
-				
+
 			};
 
 			return directory.listFiles(filter);

@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,7 @@ import javax.json.JsonObject;
 import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 
 public class FilterInitializer {
-	
+
 	public static Map<String, JsonObject> filtersWithMeta = new HashMap<>();
 	public static Set<String> filterTitles = new TreeSet<>();
 	public static Set<URL> urls = new HashSet<>();
@@ -47,6 +46,7 @@ public class FilterInitializer {
 				}
 			}
 		}
-		loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), FilterInitializer.class.getClassLoader());
+		loader = new URLClassLoader(urls.toArray(new URL[urls.size()]),
+				FilterInitializer.class.getClassLoader());
 	}
 }

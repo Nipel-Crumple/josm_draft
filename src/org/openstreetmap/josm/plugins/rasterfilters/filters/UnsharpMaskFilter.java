@@ -19,7 +19,30 @@ public class UnsharpMaskFilter implements Filter {
 	private int size;
 	private UID id;
 
+
 	@Override
+	public String toString() {
+		JsonObject json = Json
+				.createObjectBuilder()
+				.add("amount",
+						Json.createObjectBuilder().add("value", amount).build())
+						.add("size",
+								Json.createObjectBuilder().add("value", size).build())
+								.build();
+		return "from unsharp: \n" + json.toString();
+	}
+
+	@Override
+	public void setState(FilterStateModel newState) {
+		this.state = newState;
+		changeFilterState(state.encodeJson());
+	}
+
+	@Override
+	public void setId(UID id) {
+		this.id = id;
+	}
+
 	public boolean changeFilterState(JsonObject filterState) {
 		if (filterState != null) {
 
@@ -38,29 +61,6 @@ public class UnsharpMaskFilter implements Filter {
 		return false;
 	}
 
-	@Override
-	public String toString() {
-		JsonObject json = Json
-				.createObjectBuilder()
-				.add("amount",
-						Json.createObjectBuilder().add("value", amount).build())
-				.add("size",
-						Json.createObjectBuilder().add("value", size).build())
-				.build();
-		return "from unsharp: \n" + json.toString();
-	}
-
-	@Override
-	public void setState(FilterStateModel state) {
-		this.state = state;
-		changeFilterState(state.encodeJson());
-	}
-
-	@Override
-	public void setId(UID id) {
-		this.id = id;
-	}
-
 	public double getAmount() {
 		return amount;
 	}
@@ -77,6 +77,7 @@ public class UnsharpMaskFilter implements Filter {
 		this.size = size;
 	}
 
+	@Override
 	public BufferedImage applyFilter(BufferedImage img) {
 		unsharp.setAmount(amount);
 		unsharp.setRadius(size);
