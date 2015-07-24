@@ -10,7 +10,7 @@ import org.openstreetmap.josm.Main;
 
 import com.jhlabs.image.UnsharpFilter;
 
-public class UnsharpMaskFilter implements Filter {
+public class UnsharpMaskFilterImpl implements Filter {
 
 	private UnsharpFilter unsharp = new UnsharpFilter();
 	private float amount;
@@ -31,27 +31,32 @@ public class UnsharpMaskFilter implements Filter {
 	}
 
 	@Override
+	public JsonObject changeFilterState(JsonObject newFilterState) {
+		if (newFilterState != null) {
+
+			// new value of amount
+			JsonObject amountJson = newFilterState.getJsonObject("amount");
+			setAmount((float) amountJson.getJsonNumber("value").doubleValue());
+
+			JsonObject sizeJson = newFilterState.getJsonObject("size");
+			setSize(sizeJson.getJsonNumber("value").intValue());
+
+			Main.debug(id.toString() + " \n" + toString());
+
+			return newFilterState;
+		}
+
+		return null;
+	}
+
+	@Override
 	public void setId(UID id) {
 		this.id = id;
 	}
 
 	@Override
-	public boolean changeFilterState(JsonObject filterState) {
-		if (filterState != null) {
-
-			// new value of amount
-			JsonObject amountJson = filterState.getJsonObject("amount");
-			setAmount((float) amountJson.getJsonNumber("value").doubleValue());
-
-			JsonObject sizeJson = filterState.getJsonObject("size");
-			setSize(sizeJson.getJsonNumber("value").intValue());
-
-			Main.debug(id.toString() + " \n" + toString());
-
-			return true;
-		}
-
-		return false;
+	public UID getId() {
+		return id;
 	}
 
 	public double getAmount() {

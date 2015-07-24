@@ -7,9 +7,11 @@ import javax.json.JsonObject;
 
 public interface Filter {
 
-	public boolean changeFilterState(JsonObject filterState);
+	public JsonObject changeFilterState(JsonObject filterState);
 
 	public BufferedImage applyFilter(BufferedImage img);
 
 	public void setId(UID id);
+
+	public UID getId();
 }

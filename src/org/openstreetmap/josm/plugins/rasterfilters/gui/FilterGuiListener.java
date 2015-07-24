@@ -51,8 +51,7 @@ ActionListener, FilterStateOwner {
 
 		if (filterState.getParams().containsKey(parameterName)) {
 
-			SliderValue<Number> value = (SliderValue<Number>) filterState
-					.getParams().get(parameterName);
+			SliderValue<Number> value = (SliderValue<Number>) filterState.getParams().get(parameterName);
 
 			if (value.isDouble()) {
 				value.setValue((double) slider.getValue() / 100);
@@ -110,8 +109,7 @@ ActionListener, FilterStateOwner {
 		JComboBox<String> box = (JComboBox<String>) e.getSource();
 
 		String parameterName = box.getName();
-		SelectValue<String> value = (SelectValue<String>) filterState
-				.getParams().get(parameterName);
+		SelectValue<String> value = (SelectValue<String>) filterState.getParams().get(parameterName);
 
 		ComboBoxModel<String> model = box.getModel();
 		String selectedItem = (String) model.getSelectedItem();

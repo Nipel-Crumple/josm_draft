@@ -1,0 +1,35 @@
+{
+		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.HSBFilterImpl",
+		"binaries":["plugins/rasterfilters/lib/hsb.jar"],
+        "name":"hsb",
+        "title": "Hue / Saturation / Brightness",
+        "controls": [
+                {
+                        "type": "linear_slider",
+                        "name": "hue",
+                        "title": "Hue",
+                        "value_type": "float",
+                        "scale": [0, 1],
+                        "default": 0,
+                        "decoration": "none"
+                },
+                {
+                        "type": "linear_slider",
+                        "name": "saturation",
+                        "title": "Saturation",
+                        "value_type": "float",
+                        "scale": [0, 1],
+                        "default": 0,
+                        "decoration": "none"
+                },
+                {
+                        "type": "linear_slider",
+                        "name": "brightness",
+                        "title": "Brightness",
+                        "value_type": "float",
+                        "scale": [0, 1],
+                        "default": 0,
+                        "decoration": "none"
+                }
+        ]
+}

@@ -25,26 +25,25 @@ public class ChannelMixFilterImpl implements Filter {
 	}
 
 	@Override
-	public void setId(UID id) {
-		this.id = id;
-	}
-
-	@Override
 	public String toString() {
 		JsonObject json = Json
 				.createObjectBuilder()
 				.add("red",
-						Json.createObjectBuilder().add("value", red).build())
-						.add("green",
-								Json.createObjectBuilder().add("value", green).build())
-								.add("blue",
-										Json.createObjectBuilder().add("value", blue).build())
+						Json.createObjectBuilder()
+						.add("value", red)
+						.build())
+						.add("green", Json.createObjectBuilder()
+								.add("value", green)
+								.build())
+								.add("blue",Json.createObjectBuilder()
+										.add("value", blue)
+										.build())
 										.build();
-		return "from ChannelMix: \n" + json.toString();
+		return "from channelMix: \n" + json.toString();
 	}
 
 	@Override
-	public boolean changeFilterState(JsonObject filterState) {
+	public JsonObject changeFilterState(JsonObject filterState) {
 
 		if (filterState != null) {
 
@@ -60,10 +59,20 @@ public class ChannelMixFilterImpl implements Filter {
 
 			Main.debug(id.toString() + " \n" + toString());
 
-			return true;
+			return filterState;
 		}
 
-		return false;
+		return null;
+	}
+
+	@Override
+	public void setId(UID id) {
+		this.id = id;
+	}
+
+	@Override
+	public UID getId() {
+		return id;
 	}
 
 	public void setBlue(int blue) {

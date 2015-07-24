@@ -53,6 +53,7 @@ ActionListener, ItemListener {
 		String filterTitle = meta.getString("title");
 
 		fp.setName(filterTitle);
+
 		// creating model of the filter
 		FilterStateModel filterState = new FilterStateModel();
 		filterState.setFilterClassName(filterClassName);
@@ -108,8 +109,7 @@ ActionListener, ItemListener {
 				} else if (component instanceof JCheckBox) {
 					((JCheckBox) component).addItemListener(filterListener);
 				} else if (component instanceof JComboBox) {
-					((JComboBox<String>) component)
-					.addActionListener(filterListener);
+					((JComboBox<String>) component).addActionListener(filterListener);
 				}
 
 				// adding parameters to the filter instance
