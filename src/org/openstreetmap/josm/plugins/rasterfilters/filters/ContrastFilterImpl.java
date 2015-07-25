@@ -6,8 +6,6 @@ import java.rmi.server.UID;
 import javax.json.Json;
 import javax.json.JsonObject;
 
-import org.openstreetmap.josm.Main;
-
 import com.jhlabs.image.ContrastFilter;
 
 public class ContrastFilterImpl implements Filter {
@@ -33,9 +31,6 @@ public class ContrastFilterImpl implements Filter {
 		contrastBrightness.setBrightness(brightness);
 		contrastBrightness.setContrast(contrast);
 
-		Main.debug("contrast is " + String.valueOf(contrast));
-
-		Main.debug("brightness is " + String.valueOf(brightness));
 		img = contrastBrightness.filter(img, null);
 
 		return img;

@@ -69,6 +69,7 @@ public class HSBFilterImpl implements Filter {
 								.add("value", bFactor)
 								.build())
 				.build();
+
 		return "from contrast: \n" + json.toString();
 	}
 

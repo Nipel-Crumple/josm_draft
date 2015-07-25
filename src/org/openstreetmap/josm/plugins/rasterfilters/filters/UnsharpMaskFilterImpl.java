@@ -14,21 +14,9 @@ public class UnsharpMaskFilterImpl implements Filter {
 
 	private UnsharpFilter unsharp = new UnsharpFilter();
 	private float amount;
-	private int size;
+	private int threshold;
+	private int radius;
 	private UID id;
-
-
-	@Override
-	public String toString() {
-		JsonObject json = Json
-				.createObjectBuilder()
-				.add("amount",
-						Json.createObjectBuilder().add("value", amount).build())
-						.add("size",
-								Json.createObjectBuilder().add("value", size).build())
-								.build();
-		return "from unsharp: \n" + json.toString();
-	}
 
 	@Override
 	public JsonObject changeFilterState(JsonObject newFilterState) {
@@ -38,8 +26,11 @@ public class UnsharpMaskFilterImpl implements Filter {
 			JsonObject amountJson = newFilterState.getJsonObject("amount");
 			setAmount((float) amountJson.getJsonNumber("value").doubleValue());
 
-			JsonObject sizeJson = newFilterState.getJsonObject("size");
-			setSize(sizeJson.getJsonNumber("value").intValue());
+			JsonObject sizeJson = newFilterState.getJsonObject("radius");
+			setRadius(sizeJson.getJsonNumber("value").intValue());
+
+			JsonObject thresholdJson = newFilterState.getJsonObject("threshold");
+			setThreshold(thresholdJson.getJsonNumber("value").intValue());
 
 			Main.debug(id.toString() + " \n" + toString());
 
@@ -47,6 +38,14 @@ public class UnsharpMaskFilterImpl implements Filter {
 		}
 
 		return null;
+	}
+
+	@Override
+	public BufferedImage applyFilter(BufferedImage img) {
+		unsharp.setAmount(amount);
+		unsharp.setRadius(radius);
+		unsharp.setThreshold(threshold);
+		return unsharp.filter(img, null);
 	}
 
 	@Override
@@ -59,6 +58,20 @@ public class UnsharpMaskFilterImpl implements Filter {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		JsonObject json = Json
+				.createObjectBuilder()
+				.add("amount",
+						Json.createObjectBuilder().add("value", amount).build())
+				.add("radius",
+						Json.createObjectBuilder().add("value", radius).build())
+				.add("threshold",
+						Json.createObjectBuilder().add("value", threshold).build())
+				.build();
+		return "from unsharp: \n" + json.toString();
+	}
+
 	public double getAmount() {
 		return amount;
 	}
@@ -67,18 +80,20 @@ public class UnsharpMaskFilterImpl implements Filter {
 		this.amount = amount;
 	}
 
-	public int getSize() {
-		return size;
+	public int getRadius() {
+		return radius;
 	}
 
-	public void setSize(int size) {
-		this.size = size;
+	public void setRadius(int radius) {
+		this.radius = radius;
 	}
 
-	@Override
-	public BufferedImage applyFilter(BufferedImage img) {
-		unsharp.setAmount(amount);
-		unsharp.setRadius(size);
-		return unsharp.filter(img, null);
+
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
+	}
+
+	public int getThreshold() {
+		return threshold;
 	}
 }

@@ -19,8 +19,7 @@ import org.openstreetmap.josm.gui.layer.Layer.LayerAction;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 import org.openstreetmap.josm.tools.ImageProvider;
 
-public final class ShowLayerFiltersDialog extends AbstractAction implements
-LayerAction {
+public final class ShowLayerFiltersDialog extends AbstractAction implements LayerAction {
 
 	private List<FiltersDialog> dialogs = new ArrayList<FiltersDialog>();
 

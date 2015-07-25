@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
 
 public class FilterInitializer {
@@ -38,13 +39,20 @@ public class FilterInitializer {
 			filtersWithMeta.put(json.getString("name"), json);
 
 			JsonArray binaries = json.getJsonArray("binaries");
+
 			for (int i = 0; i < binaries.size(); i++) {
 				File file = new File(binaries.getString(i));
 				if (file.exists()) {
-					URL url = new URL("jar", "", file.toURI().toURL() + "!/");
+					String className = json.getString("classname");
+					className = className.replace(".", "/");
+					className = className.concat(".class");
+					Main.debug("CLASSNAME IS " + className);
+					URL url = new URL("jar", "", file.toURI().toURL() + "!/" + className);
+					Main.debug(url.toString());
 					urls.add(url);
 				}
 			}
+
 		}
 		loader = new URLClassLoader(urls.toArray(new URL[urls.size()]),
 				FilterInitializer.class.getClassLoader());

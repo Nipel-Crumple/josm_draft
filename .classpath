@@ -3,12 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/JOSM"/>
-	<classpathentry kind="lib" path="lib/Filters.jar"/>
-	<classpathentry kind="lib" path="lib/javax.json-1.0.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/rasterfilters/lib/javax.json-1.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/unsharpmask.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
