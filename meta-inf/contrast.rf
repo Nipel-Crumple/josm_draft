@@ -1,6 +1,6 @@
 {
 		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.ContrastFilterImpl",
-		"binaries":["plugins/rasterfilters/lib/filters_pack.jar"],
+		"binaries":["plugins/JOSM-filters.jar"],
         "name":"contrast",
         "title": "Contrast / Brightness",
         "controls": [

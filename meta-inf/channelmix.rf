@@ -1,6 +1,6 @@
 {
 		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.ChannelMixFilterImpl",
-		"binaries":["plugins/rasterfilters/lib/filters_pack.jar"],
+		"binaries":["plugins/JOSM-filters.jar"],
         "name":"channelMix",
         "title": "RGB Mix Filter",
         "controls": [

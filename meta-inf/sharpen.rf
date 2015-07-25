@@ -1,6 +1,6 @@
 {
 		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.UnsharpMaskFilterImpl",
-		"binaries":["plugins/rasterfilters/lib/filters_pack.jar"],
+		"binaries":["plugins/JOSM-filters.jar"],
         "name":"sharpen",
         "title": "Unsharp Mask",
         "controls": [

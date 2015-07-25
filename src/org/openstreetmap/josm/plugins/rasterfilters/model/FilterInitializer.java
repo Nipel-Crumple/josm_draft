@@ -43,13 +43,9 @@ public class FilterInitializer {
 			for (int i = 0; i < binaries.size(); i++) {
 				File file = new File(binaries.getString(i));
 				if (file.exists()) {
-					String className = json.getString("classname");
-					className = className.replace(".", "/");
-					className = className.concat(".class");
-					Main.debug("CLASSNAME IS " + className);
-					URL url = new URL("jar", "", file.toURI().toURL() + "!/" + className);
+					URL url = new URL("jar", "", file.toURI().toURL() + "!/");
 					Main.debug(url.toString());
-					urls.add(url);
+					Main.debug(String.valueOf(urls.add(url)));
 				}
 			}
 
