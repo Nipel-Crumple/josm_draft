@@ -9,7 +9,7 @@
                         "name": "contrast",
                         "title": "Contrast",
                         "value_type": "float",
-                        "scale": [0, 1],
+                        "scale": [0, 4],
                         "default": 1,
                         "decoration": "none"
                 },
@@ -18,7 +18,7 @@
                         "name": "brightness",
                         "title": "Brightness",
                         "value_type": "float",
-                        "scale": [0, 1],
+                        "scale": [0, 4],
                         "default": 1,
                         "decoration": "none"
                 }

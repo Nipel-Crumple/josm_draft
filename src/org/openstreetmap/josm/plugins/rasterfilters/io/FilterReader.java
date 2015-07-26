@@ -19,12 +19,17 @@ import javax.json.JsonReader;
 public class FilterReader {
 
 	public List<JsonObject> readMetaInf(String dir) {
+
 		// reading filters meta-INFO from file
 		File directory = new File(dir);
 
 		File[] files = findAllMeta(directory);
 
 		List<JsonObject> filtersMeta = new ArrayList<>();
+
+		if (files == null) {
+			return filtersMeta;
+		}
 
 		for (File temp : files) {
 			StringBuilder stringBuilder = new StringBuilder();

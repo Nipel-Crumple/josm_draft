@@ -16,6 +16,7 @@ import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.rasterfilters.actions.ShowLayerFiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
+import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
@@ -50,6 +51,10 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 	public void layerAdded(Layer newLayer) {
 
 		if (filterButton == null) {
+
+			// filter reading and adding to the collections of
+			// FilterInitializer
+			FilterInitializer.initFilters();
 
 			LayerListDialog dialog = Main.map
 					.getToggleDialog(LayerListDialog.class);
@@ -94,6 +99,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 			Container container = filterButton.getParent();
 			container.remove(filterButton);
+			FilterInitializer.destroyFilters();
 			filterButton = null;
 
 		}

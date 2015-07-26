@@ -6,32 +6,20 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.gui.layer.ImageProcessor;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
@@ -48,11 +36,11 @@ public class FiltersDialog {
 	public Layer layer;
 	public FiltersManager fm;
 	public JScrollPane filterContainerScroll;
-	
+
 	public FiltersDialog(ImageryLayer layer) {
 		this.layer = layer;
 		this.fm = new FiltersManager(this);
-		((ImageryLayer) layer).addImageProcessor(fm);
+		layer.addImageProcessor(fm);
 	}
 
 	public JPanel createFilterContainer() {
@@ -62,26 +50,26 @@ public class FiltersDialog {
 			filterContainer.setLayout(new BoxLayout(filterContainer,
 					BoxLayout.Y_AXIS));
 			filterContainer.setBackground(Color.white);
-			
+
 			filterContainerScroll = new JScrollPane(filterContainer,
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 			pane.add(filterContainerScroll);
-			
+
 		}
 
 		return filterContainer;
 	}
 
 	public void deleteFilterContainer() {
-		
+
 		Component parent = filterContainerScroll.getParent();
 		filterContainerScroll.removeAll();
 		((JPanel) parent).remove(filterContainerScroll);
 
 		filterContainer = null;
-		
+
 		parent.revalidate();
 		parent.repaint();
 	}
@@ -91,10 +79,6 @@ public class FiltersDialog {
 			frame.setVisible(true);
 			return frame;
 		} else {
-
-			// filter reading and adding to the collections of
-			// FilterInitializer
-			FilterInitializer.initFilters();
 
 			frame = new JFrame("Filters");
 			frame.setMinimumSize(new Dimension(350, 420));
@@ -112,7 +96,7 @@ public class FiltersDialog {
 			topPanel.setMaximumSize(new Dimension(300, 50));
 			topPanel.setMinimumSize(new Dimension(300, 50));
 			topPanel.setBackground(Color.white);
-			
+
 			JPanel labelPanel = new JPanel();
 			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
 			labelPanel.setMaximumSize(new Dimension(300, 20));
@@ -123,7 +107,7 @@ public class FiltersDialog {
 //			pane.add(labelPanel);
 
 			// TODO why after add clicked the top panel is resized???
-			
+
 			// panel that contains the checkBox and add button
 			JPanel chooseFilterPanel = new JPanel();
 			chooseFilterPanel.setMinimumSize(new Dimension(300, 30));
@@ -155,6 +139,15 @@ public class FiltersDialog {
 			addButton.setMaximumSize(new Dimension(90, 30));
 			addButton.addActionListener(new AddFilterToPanelListener());
 
+			// check if there is no meta information
+			if (FilterInitializer.filtersMeta.isEmpty()) {
+				addButton.setEnabled(false);
+				filterChooser.setEnabled(false);
+			} else {
+				addButton.setEnabled(true);
+				filterChooser.setEnabled(true);
+			}
+
 			chooseFilterPanel.add(addButton);
 
 			topPanel.add(labelPanel);
@@ -182,7 +175,7 @@ public class FiltersDialog {
 
 			String title = (String) listModel.getSelectedItem();
 			JPanel panel = null;
-			
+
 			panel = fm.createPanelByTitle(title);
 
 			if (panel != null) {

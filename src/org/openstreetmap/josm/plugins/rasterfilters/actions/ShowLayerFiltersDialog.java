@@ -44,6 +44,7 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
 		Layer layer = Main.map.mapView.getActiveLayer();
 
 		if (layer instanceof ImageryLayer) {
