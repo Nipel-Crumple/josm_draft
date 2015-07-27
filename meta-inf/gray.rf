@@ -1,0 +1,17 @@
+{
+		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.SaturateFilterImpl",
+		"binaries":["plugins/JOSM-filters.jar"],
+        "name":"saturati",
+        "title": "Saturate",
+        "controls": [
+                {
+                        "type": "linear_slider",
+                        "name": "saturate",
+                        "title": "Saturate",
+                        "value_type": "float",
+                        "scale": [0, 1],
+                        "default": 1,
+                        "decoration": "none"
+                }
+        ]
+}

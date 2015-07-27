@@ -91,7 +91,8 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 		if (oldLayer instanceof ImageryLayer) {
 			FiltersDialog dialog = action.getDialogByLayer(oldLayer);
-			((ImageryLayer) oldLayer).removeImageProcessor(dialog.fm);
+			((ImageryLayer) oldLayer).removeImageProcessor(dialog.getFiltersManager());
+			dialog.closeFrame();
 			action.removeFiltersDialog(dialog);
 		}
 

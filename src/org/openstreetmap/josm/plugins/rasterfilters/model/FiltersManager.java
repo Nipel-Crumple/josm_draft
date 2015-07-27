@@ -202,28 +202,28 @@ ActionListener, ItemListener {
 		filtersMap.remove(filterId);
 
 		// add filterTitle to the 'choose list' on the top
-		dialog.listModel.addElement(filterPanel.getName());
+		dialog.getListModel().addElement(filterPanel.getName());
 
 		// removing panel from filterContainer
 		filterPanel.removeAll();
-		dialog.filterContainer.remove(filterPanel);
+		dialog.getFilterContainer().remove(filterPanel);
 
-		if (dialog.filterContainer.getComponentCount() == 0) {
+		if (dialog.getFilterContainer().getComponentCount() == 0) {
 
 			dialog.deleteFilterContainer();
 
 		} else {
 
-			dialog.filterContainer.revalidate();
-			dialog.filterContainer.repaint();
+			dialog.getFilterContainer().revalidate();
+			dialog.getFilterContainer().repaint();
 
 		}
 
 		// if there were no elements in the list
 		// but then it appeared
 		// button should be enabled
-		if (!dialog.addButton.isEnabled()) {
-			dialog.addButton.setEnabled(true);
+		if (!dialog.getAddButton().isEnabled()) {
+			dialog.getAddButton().setEnabled(true);
 		}
 
 		Main.map.mapView.getActiveLayer().setFilterStateChanged();

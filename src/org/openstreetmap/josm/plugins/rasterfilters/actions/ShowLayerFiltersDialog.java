@@ -50,7 +50,7 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
 		if (layer instanceof ImageryLayer) {
 			for (FiltersDialog temp : dialogs) {
 
-				if (temp.layer.equals(layer)) {
+				if (temp.getLayer().equals(layer)) {
 					try {
 
 						temp.createAndShowGUI();
@@ -70,7 +70,7 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
 	public FiltersDialog getDialogByLayer(Layer layer) {
 		for (FiltersDialog dialog : dialogs) {
 
-			if (dialog.layer.equals(layer)) {
+			if (dialog.getLayer().equals(layer)) {
 				return dialog;
 			}
 

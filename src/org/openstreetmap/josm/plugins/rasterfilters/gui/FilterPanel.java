@@ -233,6 +233,7 @@ public class FilterPanel extends JPanel {
 
 			slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue,
 					new Double(initValue).intValue());
+			slider.setMinorTickSpacing(maxValue / 4);
 			slider.setName(json.getString("name"));
 			slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
 
