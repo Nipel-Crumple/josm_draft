@@ -28,6 +28,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
 
+import com.bric.swing.ColorPicker;
+
 public class FilterPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -37,7 +39,6 @@ public class FilterPanel extends JPanel {
 	public FilterPanel() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		// setMaximumSize(new Dimension(300, 400));
 		setBackground(Color.white);
 	}
 
@@ -64,6 +65,12 @@ public class FilterPanel extends JPanel {
 			setNeededHeight(getNeededHeight() + 50);
 
 			return createSelect(json);
+
+		} else if (type.equals("colorpicker")) {
+
+			setNeededHeight(getNeededHeight() + 200);
+
+			return createColorPicker(json);
 		}
 		return null;
 	}
@@ -105,6 +112,26 @@ public class FilterPanel extends JPanel {
 		this.add(selectPanel);
 
 		return selectBox;
+	}
+
+	public JComponent createColorPicker(JsonObject json) {
+		/*JPanel pickerHolder = new JPanel();
+
+		pickerHolder.setBorder(new EmptyBorder(5, 5, 5, 5));
+		pickerHolder.setBackground(Color.white);
+		pickerHolder.setLayout(new BoxLayout(pickerHolder, BoxLayout.Y_AXIS));
+		pickerHolder.setMaximumSize(new Dimension(300, 200));*/
+
+		ColorPicker picker = new ColorPicker(false, false);
+		picker.setMaximumSize(new Dimension(200,160));
+		picker.setMode(ColorPicker.HUE);
+
+		addControlTitle(json.getString("title"));
+//		pickerHolder.add(picker);
+
+		this.add(picker);
+
+		return picker;
 	}
 
 	public JCheckBox createCheckBox(String text) {
@@ -169,7 +196,7 @@ public class FilterPanel extends JPanel {
 		return bottom;
 	}
 
-	private void addSliderTitle(String labelText) {
+	private void addControlTitle(String labelText) {
 		Font labelFont = new Font("Arial", Font.PLAIN, 14);
 
 		JPanel sliderLabelPanel = new JPanel();
@@ -191,7 +218,7 @@ public class FilterPanel extends JPanel {
 
 		Border sliderBorder = new EmptyBorder(5, 5, 5, 5);
 
-		addSliderTitle(json.getString("title"));
+		addControlTitle(json.getString("title"));
 
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
 

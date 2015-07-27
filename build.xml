@@ -26,6 +26,5 @@
 	<property name="plugin.author" value="Vadim Varnavsky" />
 	<property name="plugin.class" value="org.openstreetmap.josm.plugins.rasterfilters.RasterFiltersPlugin" />
 	<property name="plugin.description" value="This plugin allows to choose and apply filters to the tiles" />
-	<!-- <property name="plugin.icon" value="images/favicon.png"/> -->
 
 </project>

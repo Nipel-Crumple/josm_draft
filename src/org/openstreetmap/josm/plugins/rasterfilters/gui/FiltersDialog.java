@@ -38,18 +38,18 @@ public class FiltersDialog {
 	private JScrollPane filterContainerScroll;
 
 	public FiltersDialog(ImageryLayer layer) {
-		this.setLayer(layer);
-		this.setFiltersManager(new FiltersManager(this));
-		layer.addImageProcessor(getFiltersManager());
+		this.layer = layer;
+		this.filtersManager = new FiltersManager(this);
+		layer.addImageProcessor(filtersManager);
 	}
 
 	public JPanel createFilterContainer() {
-		if (getFilterContainer() == null) {
+		if (filterContainer == null) {
 
-			setFilterContainer(new JPanel());
-			getFilterContainer().setLayout(new BoxLayout(getFilterContainer(),
+			filterContainer = new JPanel();
+			filterContainer.setLayout(new BoxLayout(getFilterContainer(),
 					BoxLayout.Y_AXIS));
-			getFilterContainer().setBackground(Color.white);
+			filterContainer.setBackground(Color.white);
 
 			filterContainerScroll = new JScrollPane(getFilterContainer(),
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -59,7 +59,7 @@ public class FiltersDialog {
 
 		}
 
-		return getFilterContainer();
+		return filterContainer;
 	}
 
 	public void deleteFilterContainer() {
@@ -68,7 +68,7 @@ public class FiltersDialog {
 		filterContainerScroll.removeAll();
 		((JPanel) parent).remove(filterContainerScroll);
 
-		setFilterContainer(null);
+		filterContainer = null;
 
 		parent.revalidate();
 		parent.repaint();
@@ -119,9 +119,9 @@ public class FiltersDialog {
 
 			Set<String> filterTitles = FilterInitializer.filterTitles;
 
-			setListModel(new DefaultComboBoxModel<String>());
+			listModel = new DefaultComboBoxModel<String>();
 			for (String temp : filterTitles) {
-				getListModel().addElement(temp);
+				listModel.addElement(temp);
 			}
 
 			filterChooser = new JComboBox<>(getListModel());
@@ -131,22 +131,22 @@ public class FiltersDialog {
 			// empty space area between select and add button
 			chooseFilterPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-			if (getListModel().getSize() == 0) {
+			if (listModel.getSize() == 0) {
 				Main.debug("No metaINF");
 			}
 
-			setAddButton(new JButton());
-			getAddButton().setText("add");
-			getAddButton().setAlignmentX(Component.CENTER_ALIGNMENT);
-			getAddButton().setMaximumSize(new Dimension(90, 30));
-			getAddButton().addActionListener(new AddFilterToPanelListener());
+			addButton = new JButton();
+			addButton.setText("add");
+			addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+			addButton.setMaximumSize(new Dimension(90, 30));
+			addButton.addActionListener(new AddFilterToPanelListener());
 
 			// check if there is no meta information
 			if (FilterInitializer.filtersMeta.isEmpty()) {
-				getAddButton().setEnabled(false);
+				addButton.setEnabled(false);
 				filterChooser.setEnabled(false);
 			} else {
-				getAddButton().setEnabled(true);
+				addButton.setEnabled(true);
 				filterChooser.setEnabled(true);
 			}
 
@@ -178,40 +178,20 @@ public class FiltersDialog {
 		return layer;
 	}
 
-	public void setLayer(Layer layer) {
-		this.layer = layer;
-	}
-
 	public JPanel getFilterContainer() {
 		return filterContainer;
-	}
-
-	public void setFilterContainer(JPanel filterContainer) {
-		this.filterContainer = filterContainer;
 	}
 
 	public DefaultComboBoxModel<String> getListModel() {
 		return listModel;
 	}
 
-	public void setListModel(DefaultComboBoxModel<String> listModel) {
-		this.listModel = listModel;
-	}
-
 	public JButton getAddButton() {
 		return addButton;
 	}
 
-	public void setAddButton(JButton addButton) {
-		this.addButton = addButton;
-	}
-
 	public FiltersManager getFiltersManager() {
 		return filtersManager;
-	}
-
-	public void setFiltersManager(FiltersManager filtersManager) {
-		this.filtersManager = filtersManager;
 	}
 
 	class AddFilterToPanelListener implements ActionListener {
@@ -219,20 +199,20 @@ public class FiltersDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
-			String title = (String) getListModel().getSelectedItem();
+			String title = (String) listModel.getSelectedItem();
 			JPanel panel = null;
 
-			panel = getFiltersManager().createPanelByTitle(title);
+			panel = filtersManager.createPanelByTitle(title);
 
 			if (panel != null) {
-				setFilterContainer(createFilterContainer());
-				getFilterContainer().add(panel);
+				filterContainer = createFilterContainer();
+				filterContainer.add(panel);
 			}
 
-			getListModel().removeElement(title);
+			listModel.removeElement(title);
 
-			if (getListModel().getSize() == 0) {
-				getAddButton().setEnabled(false);
+			if (listModel.getSize() == 0) {
+				addButton.setEnabled(false);
 			}
 
 		}

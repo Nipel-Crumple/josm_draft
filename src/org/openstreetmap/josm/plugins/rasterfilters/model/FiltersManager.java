@@ -30,6 +30,8 @@ import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterGuiListener;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterPanel;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 
+import com.bric.swing.ColorPicker;
+
 public class FiltersManager implements StateChangeListener, ImageProcessor,
 ActionListener, ItemListener {
 
@@ -110,6 +112,8 @@ ActionListener, ItemListener {
 					((JCheckBox) component).addItemListener(filterListener);
 				} else if (component instanceof JComboBox) {
 					((JComboBox<String>) component).addActionListener(filterListener);
+				} else if (component instanceof ColorPicker) {
+					((ColorPicker) component).addPropertyChangeListener(filterListener);
 				}
 
 				// adding parameters to the filter instance

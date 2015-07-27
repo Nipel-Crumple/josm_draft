@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.rmi.server.UID;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +25,7 @@ import org.openstreetmap.josm.plugins.rasterfilters.values.SelectValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 
 public class FilterGuiListener implements ChangeListener, ItemListener,
-ActionListener, FilterStateOwner {
+ActionListener, PropertyChangeListener, FilterStateOwner {
 
 	private StateChangeListener handler;
 	private FilterStateModel filterState;
@@ -120,6 +122,12 @@ ActionListener, FilterStateOwner {
 
 		// notify about state is changed now so send msg to FiltersManager
 		handler.filterStateChanged(filterId, filterState);
+
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		// TODO Auto-generated method stub
 
 	}
 
