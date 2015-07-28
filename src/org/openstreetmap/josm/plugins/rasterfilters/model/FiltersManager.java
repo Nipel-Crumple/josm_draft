@@ -124,6 +124,7 @@ ActionListener, ItemListener {
 
 		fp.setNeededHeight(fp.getNeededHeight() + 60);
 		fp.setMaximumSize(new Dimension(300, fp.getNeededHeight()));
+		fp.setPreferredSize(new Dimension(300, fp.getNeededHeight()));
 
 		filter.changeFilterState(filterState.encodeJson());
 		Main.map.mapView.getActiveLayer().setFilterStateChanged();
@@ -147,11 +148,10 @@ ActionListener, ItemListener {
 	@Override
 	public void filterStateChanged(UID filterId, FilterStateModel filterState) {
 
-		filtersMap.get(filterId).changeFilterState(filterState.encodeJson());
+		if (filtersMap.get(filterId) != null)
+			filtersMap.get(filterId).changeFilterState(filterState.encodeJson());
 
 		Main.map.mapView.getActiveLayer().setFilterStateChanged();
-
-		Main.debug("Current state" + filterState.encodeJson().toString());
 
 	}
 

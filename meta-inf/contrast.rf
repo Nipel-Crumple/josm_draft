@@ -21,13 +21,6 @@
                         "scale": [0, 4],
                         "default": 1,
                         "decoration": "none"
-                },
-                {
-                        "type": "colorpicker",
-                        "name": "colorpicker",
-                        "title": "Choose a color",
-                        "value_type": "color",
-                        "decoration": "none"
                 }
         ]
 }

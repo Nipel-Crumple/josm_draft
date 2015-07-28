@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.rasterfilters.model;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,6 +10,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 import org.openstreetmap.josm.plugins.rasterfilters.values.BooleanValue;
+import org.openstreetmap.josm.plugins.rasterfilters.values.ColorValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SelectValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.Value;
@@ -76,6 +78,20 @@ public class FilterStateModel {
 			SelectValue<String> value = new SelectValue<>(parameterName,
 					defaultValue);
 			params.put(parameterName, value);
+
+		} else if (json.getString("type").equals("colorpicker")) {
+
+			JsonObject defaultColorJson = json.getJsonObject("default");
+			int r = defaultColorJson.getInt("red");
+			int g = defaultColorJson.getInt("green");
+			int b = defaultColorJson.getInt("blue");
+
+			Color defaultColor = new Color(r, g, b);
+
+			ColorValue<Color> value = new ColorValue<>(parameterName,
+					defaultColor);
+			params.put(parameterName, value);
+
 		}
 	}
 
@@ -85,21 +101,20 @@ public class FilterStateModel {
 
 		for (Entry<String, Value<?>> entry : params.entrySet()) {
 
-			// if value is Number
 			Object value = entry.getValue().getValue();
 
 			if (value instanceof String) {
 
 				jsonBuilder.add(entry.getKey(),
 						Json.createObjectBuilder().add("value", (String) value)
-						.build());
+								.build());
 
 			}
 
 			if (value instanceof Boolean) {
 				jsonBuilder.add(entry.getKey(),
 						Json.createObjectBuilder()
-						.add("value", (Boolean) value).build());
+								.add("value", (Boolean) value).build());
 			}
 
 			if (value instanceof Number) {
@@ -115,6 +130,19 @@ public class FilterStateModel {
 							.add("value", (Integer) value).build());
 
 				}
+			}
+
+			if (value instanceof Color) {
+
+				jsonBuilder.add(entry.getKey(),
+							Json.createObjectBuilder()
+								.add("value", Json.createObjectBuilder()
+												  .add("red", ((Color) value).getRed())
+												  .add("green", ((Color) value).getGreen())
+												  .add("blue", ((Color) value).getBlue())
+												  .build())
+								.build());
+
 			}
 		}
 

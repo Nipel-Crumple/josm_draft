@@ -171,7 +171,9 @@ public class FiltersDialog {
 	}
 
 	public void closeFrame() {
-		frame.dispose();
+		if (frame.isActive()) {
+			frame.dispose();
+		}
 	}
 
 	public Layer getLayer() {

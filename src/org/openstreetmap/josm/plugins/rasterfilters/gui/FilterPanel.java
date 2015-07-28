@@ -68,7 +68,7 @@ public class FilterPanel extends JPanel {
 
 		} else if (type.equals("colorpicker")) {
 
-			setNeededHeight(getNeededHeight() + 200);
+			setNeededHeight(getNeededHeight() + 220);
 
 			return createColorPicker(json);
 		}
@@ -115,19 +115,13 @@ public class FilterPanel extends JPanel {
 	}
 
 	public JComponent createColorPicker(JsonObject json) {
-		/*JPanel pickerHolder = new JPanel();
-
-		pickerHolder.setBorder(new EmptyBorder(5, 5, 5, 5));
-		pickerHolder.setBackground(Color.white);
-		pickerHolder.setLayout(new BoxLayout(pickerHolder, BoxLayout.Y_AXIS));
-		pickerHolder.setMaximumSize(new Dimension(300, 200));*/
 
 		ColorPicker picker = new ColorPicker(false, false);
-		picker.setMaximumSize(new Dimension(200,160));
+		picker.setPreferredSize(new Dimension(200,180));
 		picker.setMode(ColorPicker.HUE);
+		picker.setName(json.getString("name"));
 
 		addControlTitle(json.getString("title"));
-//		pickerHolder.add(picker);
 
 		this.add(picker);
 

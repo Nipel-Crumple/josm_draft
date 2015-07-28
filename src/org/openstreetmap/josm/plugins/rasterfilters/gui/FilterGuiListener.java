@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -17,12 +18,14 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FilterStateModel;
 import org.openstreetmap.josm.plugins.rasterfilters.model.StateChangeListener;
 import org.openstreetmap.josm.plugins.rasterfilters.values.BooleanValue;
+import org.openstreetmap.josm.plugins.rasterfilters.values.ColorValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SelectValue;
 import org.openstreetmap.josm.plugins.rasterfilters.values.SliderValue;
+
+import com.bric.swing.ColorPicker;
 
 public class FilterGuiListener implements ChangeListener, ItemListener,
 ActionListener, PropertyChangeListener, FilterStateOwner {
@@ -95,11 +98,7 @@ ActionListener, PropertyChangeListener, FilterStateOwner {
 
 		BooleanValue value = (BooleanValue) filterState.getParams().get(
 				parameterName);
-		Main.debug(value.toString());
 		value.setValue(box.isSelected());
-		Main.debug(box.isSelected() + box.getName());
-
-		filterState.getParams().put(parameterName, value);
 
 		handler.filterStateChanged(filterId, filterState);
 
@@ -118,8 +117,6 @@ ActionListener, PropertyChangeListener, FilterStateOwner {
 
 		value.setValue(selectedItem);
 
-		filterState.getParams().put(parameterName, value);
-
 		// notify about state is changed now so send msg to FiltersManager
 		handler.filterStateChanged(filterId, filterState);
 
@@ -127,8 +124,18 @@ ActionListener, PropertyChangeListener, FilterStateOwner {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		// TODO Auto-generated method stub
+		ColorPicker picker = (ColorPicker) evt.getSource();
 
+		int r = picker.getColor().getRed();
+		int g = picker.getColor().getGreen();
+		int b = picker.getColor().getBlue();
+
+		String parameterName = picker.getName();
+
+		ColorValue<Color> value = (ColorValue<Color>) filterState.getParams().get(parameterName);
+		value.setValue(new Color(r, g, b));
+
+		handler.filterStateChanged(filterId, filterState);
 	}
 
 }
