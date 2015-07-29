@@ -12,16 +12,19 @@ import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.rasterfilters.actions.ShowLayerFiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
+import org.openstreetmap.josm.plugins.rasterfilters.preferences.RasterFiltersPreferences;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 	private SideButton filterButton;
 	private ShowLayerFiltersDialog action;
+	private PreferenceSetting setting;
 
 	public RasterFiltersPlugin(PluginInformation info) {
 		super(info);
@@ -104,6 +107,15 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 			filterButton = null;
 
 		}
+	}
+
+	@Override
+	public PreferenceSetting getPreferenceSetting() {
+		if (setting == null) {
+			setting = new RasterFiltersPreferences();
+		}
+
+		return setting;
 	}
 
 }

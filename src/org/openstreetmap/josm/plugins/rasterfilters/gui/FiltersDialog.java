@@ -171,8 +171,10 @@ public class FiltersDialog {
 	}
 
 	public void closeFrame() {
-		if (frame.isActive()) {
-			frame.dispose();
+		if (frame != null) {
+			if (frame.isShowing()) {
+				frame.dispose();
+			}
 		}
 	}
 

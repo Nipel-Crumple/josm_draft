@@ -1,30 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-** This is a template build file for a JOSM  plugin.
-**
-** Maintaining versions
-** ====================
-** See README.template
-**
-** Usage
-** =====
-** Call "ant help" to get possible build targets.
-**
--->
+
 <project name="rasterfilters" default="dist" basedir=".">
+	
 	<!-- ** include targets that all plugins have in common ** -->
 	<import file="../build-common.xml" />
+	
 	<!-- enter the SVN commit message -->
 	<property name="commit.message" value="Commit message" />
+	
 	<!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-	<property name="plugin.main.version" value="8608" />
-	<!-- Configure these properties (replace "..." accordingly).
-         See http://josm.openstreetmap.de/wiki/DevelopersGuide/DevelopingPlugins
-    -->
+	<property name="plugin.main.version" value="8625" />
 
     <property name="plugin.icon" value="images/josm_filters_48.png"/>
 	<property name="plugin.author" value="Vadim Varnavsky" />
 	<property name="plugin.class" value="org.openstreetmap.josm.plugins.rasterfilters.RasterFiltersPlugin" />
-	<property name="plugin.description" value="This plugin allows to choose and apply filters to the tiles" />
+	<property name="plugin.description" value="The Raster Filters lugin allows to choose and apply some images' filters to the tiles" />
 
 </project>
