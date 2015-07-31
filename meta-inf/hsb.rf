@@ -1,6 +1,6 @@
 {
-		"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.HSBFilterImpl",
-		"binaries":["plugins/JOSM-filters.jar"],
+	"classname":"org.openstreetmap.josm.plugins.rasterfilters.filters.HSBFilterImpl",
+	"binaries":["plugins/JOSM-filters.jar"],
         "name":"hsb",
         "title": "Hue / Saturation / Brightness",
         "controls": [

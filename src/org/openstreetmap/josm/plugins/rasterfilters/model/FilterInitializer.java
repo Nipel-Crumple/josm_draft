@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
-import org.openstreetmap.josm.plugins.rasterfilters.io.FilterReader;
+import org.openstreetmap.josm.plugins.rasterfilters.io.FiltersDownloader;
 
 public class FilterInitializer {
 
@@ -23,16 +23,16 @@ public class FilterInitializer {
 	public static Set<URL> urls = new HashSet<>();
 	public static List<JsonObject> filtersMeta;
 	public static ClassLoader loader;
-	private static FilterReader fr;
+	private static FiltersDownloader fr;
 
 	public static void initFilters() {
 
 		String dir = "plugins/rasterfilters/meta-inf";
 
 		// reading metainf from file
-		fr = new FilterReader();
+		fr = new FiltersDownloader();
 
-		filtersMeta = fr.readMetaInf(dir);
+		filtersMeta = fr.loadMetaInf(dir);
 
 		for (JsonObject json : filtersMeta) {
 

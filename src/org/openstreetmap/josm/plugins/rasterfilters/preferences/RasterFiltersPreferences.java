@@ -2,39 +2,28 @@ package org.openstreetmap.josm.plugins.rasterfilters.preferences;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.preferences.PreferenceTabbedPane;
 import org.openstreetmap.josm.gui.preferences.SubPreferenceSetting;
 import org.openstreetmap.josm.gui.preferences.TabPreferenceSetting;
 import org.openstreetmap.josm.gui.preferences.map.MapPreference;
 import org.openstreetmap.josm.tools.GBC;
 
-import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
-
 public class RasterFiltersPreferences implements SubPreferenceSetting {
 
+	private FiltersListDownloader downloader = new FiltersListDownloader();
 	@Override
 	public void addGui(PreferenceTabbedPane gui) {
 		JPanel holder = new JPanel();
@@ -43,14 +32,37 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 		holder.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		AbstractTableModel model = new FiltersTableModel();
+		model.addTableModelListener(new TableModelListener() {
+
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				int row = e.getFirstRow();
+				int col = e.getColumn();
+				TableModel model = (TableModel) e.getSource();
+				String columnName = model.getColumnName(col);
+
+				if (columnName.equals("Downloaded")) {
+
+					Boolean isDownloadedUpdate = (Boolean) model.getValueAt(row, col);
+					List<FilterInfo> filtersList = ((FiltersTableModel) model).filtersList;
+
+					filtersList.get(row).setDownloaded(isDownloadedUpdate);
+				}
+
+			}
+		});
+
 		JTable table = new JTable(model);
+		table.getTableHeader().setReorderingAllowed(false);
 		JScrollPane pane = new JScrollPane(table);
 
 		holder.add(pane, GBC.eol().fill(GBC.BOTH));
 
 		GridBagConstraints c = GBC.eol();
 		c.anchor = GBC.EAST;
-		holder.add(new JButton("Download"), c);
+
+		JButton download = new JButton("Download");
+		holder.add(download, c);
 
 		MapPreference pref = gui.getMapPreference();
 		pref.addSubTab(this, "Image Filters", holder);
@@ -82,12 +94,13 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		public FiltersTableModel() {
 
-			filtersList = FiltersListDownloader.downloadFilters();
-			data = new Object[filtersList.size()][2];
+			filtersList = downloader.downloadFilters();
+			data = new Object[filtersList.size()][3];
 
 			for (int i = 0; i < filtersList.size(); i++) {
 				data[i][0] = filtersList.get(i).getName();
 				data[i][1] = filtersList.get(i).getDescription();
+				data[i][2] = filtersList.get(i).isDownloaded();
 			}
 
 		}
@@ -99,7 +112,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		@Override
 		public int getColumnCount() {
-			return 3;
+			return columnNames.length;
 		}
 
 		@Override
@@ -107,7 +120,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 			switch(columnIndex) {
 				case 0: return data[rowIndex][0];
 				case 1: return data[rowIndex][1];
-				case 2: return filtersList.get(rowIndex).isDownloaded();
+				case 2: return data[rowIndex][2];
 				default: return null;
 			}
 		}
@@ -130,6 +143,12 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 			return false;
 		}
+
+		@Override
+		public void setValueAt(Object value, int row, int col) {
+			data[row][col] = value;
+			fireTableCellUpdated(row, col);
+		}
 	}
 
 }
@@ -137,15 +156,17 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 class FilterInfo {
 	private String name;
 	private String description;
+	private JsonObject meta;
 	private Boolean isDownloaded;
 
 	public FilterInfo() {
 
 	}
 
-	public FilterInfo(String name, String description, boolean isDownloaded) {
+	public FilterInfo(String name, String description, JsonObject meta, boolean isDownloaded) {
 		this.setName(name);
 		this.setDescription(description);
+		this.meta = meta;
 		this.setDownloaded(isDownloaded);
 	}
 
@@ -165,6 +186,14 @@ class FilterInfo {
 		this.description = description;
 	}
 
+	public JsonObject getMeta() {
+		return meta;
+	}
+
+	public void setMeta(JsonObject meta) {
+		this.meta = meta;
+	}
+
 	public Boolean isDownloaded() {
 		return isDownloaded;
 	}
@@ -173,76 +202,12 @@ class FilterInfo {
 		this.isDownloaded = isDownloaded;
 	}
 
-}
-
-class FiltersListDownloader {
-
-	private static List<FilterInfo> filtersInfo = new ArrayList<>();
-
-	public static List<FilterInfo> downloadFilters() {
-
-		List<Object> positionalParams = new ArrayList<Object>();
-
-		JSONRPC2Request reqOut = new JSONRPC2Request("wiki.getPageHTML",
-				new Random().nextInt());
-
-		// name of the needed wiki page
-		positionalParams.add("ImageFilters");
-		reqOut.setPositionalParams(positionalParams);
-
-		String jsonString = reqOut.toString();
-
-		URL wikiApi;
-		HttpURLConnection wikiConnection;
-		try {
-			wikiApi = new URL("https://josm.openstreetmap.de/jsonrpc");
-			wikiConnection = (HttpURLConnection) wikiApi.openConnection();
-			wikiConnection.setDoOutput(true);
-			wikiConnection.setDoInput(true);
-
-			wikiConnection.setRequestProperty("Content-Type",
-					"application/json");
-			wikiConnection.setRequestProperty("Method", "POST");
-			wikiConnection.connect();
-
-			OutputStream os = wikiConnection.getOutputStream();
-			os.write(jsonString.getBytes("UTF-8"));
-			os.close();
-
-			int HttpResult = wikiConnection.getResponseCode();
-			if (HttpResult == HttpURLConnection.HTTP_OK) {
-
-				JsonReader jsonStream = Json
-						.createReader(new InputStreamReader(wikiConnection
-								.getInputStream(), "utf-8"));
-
-				JsonObject jsonResponse = jsonStream.readObject();
-				jsonStream.close();
-
-				Elements trTagElems =  Jsoup.parse(jsonResponse.getString("result"))
-						.getElementsByTag("tr");
-				for (Element element : trTagElems) {
-
-					Elements elems = element.getElementsByTag("td");
-					if (!elems.isEmpty()) {
-						filtersInfo.add(new FilterInfo(elems.get(0).ownText(),
-								elems.get(1).ownText(), false));
-					}
-				}
-
-			} else {
-				Main.debug("Error happenned while requesting for the list of filters");
-			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		return filtersInfo;
-	}
-
-	public static List<FilterInfo> getFiltersInfoList() {
-		return filtersInfo;
+	@Override
+	public String toString() {
+		return "name: " + getName() +
+				"\nDescription: " + getDescription() +
+				"\nDownloaded: " + isDownloaded() +
+				"\nMeta: " + getMeta();
 	}
 }
 

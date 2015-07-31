@@ -16,9 +16,9 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-public class FilterReader {
+public class FiltersDownloader {
 
-	public List<JsonObject> readMetaInf(String dir) {
+	public List<JsonObject> loadMetaInf(String dir) {
 
 		// reading filters meta-INFO from file
 		File directory = new File(dir);
