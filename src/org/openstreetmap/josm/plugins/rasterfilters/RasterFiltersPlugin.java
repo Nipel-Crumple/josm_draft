@@ -29,6 +29,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 	public RasterFiltersPlugin(PluginInformation info) {
 		super(info);
 		Main.debug("Loading RasterFiltersPlugin");
+		FiltersDownloader.setPluginDir(getPluginDir());
 	}
 
 	@Override

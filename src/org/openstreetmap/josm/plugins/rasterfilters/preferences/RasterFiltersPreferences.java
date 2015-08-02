@@ -40,15 +40,12 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 				int row = e.getFirstRow();
 				int col = e.getColumn();
 				TableModel model = (TableModel) e.getSource();
-				String columnName = model.getColumnName(col);
 
-				if (columnName.equals("")) {
+				Boolean isDownloadedUpdate = (Boolean) model.getValueAt(row,
+						col);
+				List<FilterInfo> filtersList = ((FiltersTableModel) model).filtersInfoList;
 
-					Boolean isDownloadedUpdate = (Boolean) model.getValueAt(row, col);
-					List<FilterInfo> filtersList = ((FiltersTableModel) model).filtersList;
-
-					filtersList.get(row).setDownloaded(isDownloadedUpdate);
-				}
+				filtersList.get(row).setNeedToDownload(isDownloadedUpdate);
 
 			}
 		});
@@ -92,25 +89,25 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		String[] columnNames = { "Filter Name", "Description", "" };
 		Class[] columnClasses = { String.class, String.class, Boolean.class };
-		List<FilterInfo> filtersList;
+		public List<FilterInfo> filtersInfoList;
 		Object[][] data;
 
 		public FiltersTableModel() {
 
-			filtersList = downloader.downloadFiltersInfoList();
-			data = new Object[filtersList.size()][3];
+			filtersInfoList = downloader.downloadFiltersInfoList();
+			data = new Object[filtersInfoList.size()][3];
 
-			for (int i = 0; i < filtersList.size(); i++) {
-				data[i][0] = filtersList.get(i).getName();
-				data[i][1] = filtersList.get(i).getDescription();
-				data[i][2] = filtersList.get(i).isDownloaded();
+			for (int i = 0; i < filtersInfoList.size(); i++) {
+				data[i][0] = filtersInfoList.get(i).getName();
+				data[i][1] = filtersInfoList.get(i).getDescription();
+				data[i][2] = filtersInfoList.get(i).isNeedToDownload();
 			}
 
 		}
 
 		@Override
 		public int getRowCount() {
-			return filtersList.size();
+			return filtersInfoList.size();
 		}
 
 		@Override
@@ -120,11 +117,15 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			switch(columnIndex) {
-				case 0: return data[rowIndex][0];
-				case 1: return data[rowIndex][1];
-				case 2: return data[rowIndex][2];
-				default: return null;
+			switch (columnIndex) {
+			case 0:
+				return filtersInfoList.get(rowIndex).getName();
+			case 1:
+				return filtersInfoList.get(rowIndex).getDescription();
+			case 2:
+				return filtersInfoList.get(rowIndex).isNeedToDownload();
+			default:
+				return null;
 			}
 		}
 
@@ -149,8 +150,14 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		@Override
 		public void setValueAt(Object value, int row, int col) {
-			data[row][col] = value;
-			fireTableCellUpdated(row, col);
+			if (col == 2) {
+				filtersInfoList.get(row).setNeedToDownload((boolean) value);
+				fireTableCellUpdated(row, col);
+			}
+		}
+
+		public List<FilterInfo> getFiltersList() {
+			return filtersInfoList;
 		}
 	}
 
@@ -160,17 +167,18 @@ class FilterInfo {
 	private String name;
 	private String description;
 	private JsonObject meta;
-	private Boolean isDownloaded;
+	private boolean needToDownload;
 
 	public FilterInfo() {
 
 	}
 
-	public FilterInfo(String name, String description, JsonObject meta, boolean isDownloaded) {
+	public FilterInfo(String name, String description, JsonObject meta,
+			boolean needToDownload) {
 		this.setName(name);
 		this.setDescription(description);
 		this.meta = meta;
-		this.setDownloaded(isDownloaded);
+		this.setNeedToDownload(needToDownload);
 	}
 
 	public String getName() {
@@ -197,21 +205,17 @@ class FilterInfo {
 		this.meta = meta;
 	}
 
-	public Boolean isDownloaded() {
-		return isDownloaded;
+	public boolean isNeedToDownload() {
+		return needToDownload;
 	}
 
-	public void setDownloaded(boolean isDownloaded) {
-		this.isDownloaded = isDownloaded;
+	public void setNeedToDownload(boolean needToDownload) {
+		this.needToDownload = needToDownload;
 	}
 
 	@Override
 	public String toString() {
-		return "name: " + getName() +
-				"\nDescription: " + getDescription() +
-				"\nDownloaded: " + isDownloaded() +
-				"\nMeta: " + getMeta();
+		return "name: " + getName() + "\nDescription: " + getDescription()
+				+ "\nMeta: " + getMeta();
 	}
 }
-
-

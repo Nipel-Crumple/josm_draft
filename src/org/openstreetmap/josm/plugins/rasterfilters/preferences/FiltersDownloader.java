@@ -1,8 +1,16 @@
 package org.openstreetmap.josm.plugins.rasterfilters.preferences;
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -11,9 +19,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,18 +44,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
 
-public class FiltersDownloader implements ActionListener{
+public class FiltersDownloader implements ActionListener {
+	private static volatile String pluginDir;
 
-	public static List<JsonObject> filtersMeta = new ArrayList<>();
+	public static Set<JsonObject> filtersMeta = new HashSet<>();
 	public static Set<String> filterTitles = new TreeSet<>();
-	public static Set<URL> binariesUrls = new HashSet<>();
+	public static Set<URL> binariesLocalUrls = new HashSet<>();
 	public static ClassLoader loader;
-	private String pluginDir;
+	public static Map<String, String> urlsMap = new HashMap<>();
 
-	private List<JsonObject> filtersMetaToLoad = new ArrayList<>();
-	List<FilterInfo> filtersInfo = new ArrayList<>();
+	private Set<JsonObject> filtersMetaToLoad = new HashSet<>();
+	List<FilterInfo> filtersInfoList = new ArrayList<>();
 
 	public List<FilterInfo> downloadFiltersInfoList() {
 
@@ -99,10 +110,12 @@ public class FiltersDownloader implements ActionListener{
 						// TODO Main.pref
 						boolean isLoaded = false;
 
-						String link = elems.get(0).getElementsByTag("a").attr("href");
+						String link = elems.get(0).getElementsByTag("a")
+								.attr("href");
 
 						JsonObject meta = loadMeta(link);
-						filtersInfo.add(new FilterInfo(name, description, meta, isLoaded));
+						filtersInfoList.add(new FilterInfo(name, description, meta,
+								isLoaded));
 					}
 				}
 
@@ -114,7 +127,7 @@ public class FiltersDownloader implements ActionListener{
 			e1.printStackTrace();
 		}
 
-		return filtersInfo;
+		return filtersInfoList;
 	}
 
 	public static JsonObject loadMeta(String link) {
@@ -189,58 +202,157 @@ public class FiltersDownloader implements ActionListener{
 	}
 
 	public static void initFilters() {
+		File file = new File(pluginDir + "urls.map");
 
-		for (JsonObject json : filtersMeta) {
+		if (file.exists()) {
+			try {
+				FileReader fileReader = new FileReader(file);
+				BufferedReader br = new BufferedReader(fileReader);
 
-			filterTitles.add(json.getString("title"));
+				String temp = null;
 
-			JsonArray binaries = json.getJsonArray("binaries");
-
-			for (int i = 0; i < binaries.size(); i++) {
-
-				File file = new File(binaries.getString(i));
-
-				if (file.exists()) {
+				while ((temp = br.readLine()) != null) {
+					String[] mapEntry = temp.split("\\t");
 					URL url;
 					try {
-						url = new URL("jar", "", file.toURI().toURL() + "!/");
-						binariesUrls.add(url);
+						url = new URL("jar", "", mapEntry + "!/");
+						binariesLocalUrls.add(url);
 					} catch (MalformedURLException e) {
-						Main.debug("Initializing filters with unknown protocol. \n" + e.getMessage());
+						Main.debug("Initializing filters with unknown protocol. \n"
+								+ e.getMessage());
 					}
 				}
-
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 
-		loader = new URLClassLoader(binariesUrls.toArray(new URL[binariesUrls.size()]),
-				FilterInitializer.class.getClassLoader());
+		loader = new URLClassLoader(
+				binariesLocalUrls.toArray(new URL[binariesLocalUrls.size()]),
+				FiltersDownloader.class.getClassLoader());
 	}
 
 	public static void destroyFilters() {
 		filterTitles.clear();
-		binariesUrls.clear();
+		binariesLocalUrls.clear();
 		FiltersDownloader.filtersMeta.clear();
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		JScrollPane pane = (JScrollPane) ((JButton)e.getSource()).getParent().getComponent(0);
-		JTable table = (JTable) pane.getComponent(0);
-		int[] selectedRows = table.getSelectedRows();
 
-		for (int index : selectedRows) {
-			filtersMetaToLoad.add(filtersInfo.get(index).getMeta());
-		}
+		JButton download = (JButton) e.getSource();
+		Container holder = download.getParent();
+		JScrollPane pane = (JScrollPane) holder.getComponent(0);
+		JTable table = (JTable) pane.getViewport().getView();
+
+	    int rows = table.getRowCount();
+
+	    for (FilterInfo temp : filtersInfoList) {
+	    	if (temp.isNeedToDownload()) {
+	    		filtersMetaToLoad.add(temp.getMeta());
+	    	} else {
+	    		filtersMetaToLoad.remove(temp.getMeta());
+	    	}
+	    }
+
 
 		loadBinariesFromMeta(filtersMetaToLoad);
+
+		Main.debug("filtersMeta size is " + filtersMeta.size());
+		Main.debug("filtersMetaToLoad size is " + filtersMetaToLoad.size());
+		Main.debug(filtersMetaToLoad.toString());
 	}
 
-	public void loadBinariesFromMeta(List<JsonObject> metaList) {
-		for (JsonObject temp : metaList) {
-
+	public void loadBinariesFromMeta(Set<JsonObject> metaList) {
+		File file = new File(pluginDir + "urls.map");
+		FileWriter fileWriter = null;
+		BufferedWriter writer = null;
+		try {
+			fileWriter = new FileWriter(file);
+			writer = new BufferedWriter(fileWriter);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+
+		for (JsonObject temp : metaList) {
+			JsonArray binaries = temp.getJsonArray("binaries");
+
+			for (int i = 0; i < binaries.size(); i++) {
+
+				Pattern p = Pattern.compile("\\w.*/");
+				Matcher m = p.matcher(binaries.getString(i));
+
+				String localPath = null;
+
+				if (m.find()) {
+
+					File plugin = new File(pluginDir);
+
+					String plugDir = plugin.getParent();
+
+					localPath = plugDir + "\\"
+							+ binaries.getString(i).substring(m.end());
+				}
+
+				loadBinaryToFile(binaries.getString(i), localPath);
+
+				try {
+					writer.append(binaries.getString(i));
+					writer.append("\t");
+					writer.append(localPath);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		try {
+			writer.close();
+			fileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void setPluginDir(String dir) {
+		pluginDir = dir;
+	}
+
+	public void loadBinaryToFile(String fromUrl, String toFile) {
+
+		URL url = null;
+		URLConnection con = null;
+
+		try {
+			url = new URL(fromUrl);
+			con = url.openConnection();
+			File file = new File(toFile);
+
+			if (file.exists()) {
+				Main.debug("File" + toFile + " already exists");
+				return;
+			} else {
+
+				BufferedInputStream in = new BufferedInputStream(
+						con.getInputStream());
+				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+				int i;
+
+				while ((i = in.read()) != -1) {
+					out.write(i);
+				}
+
+				out.flush();
+				out.close();
+				in.close();
+			}
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
