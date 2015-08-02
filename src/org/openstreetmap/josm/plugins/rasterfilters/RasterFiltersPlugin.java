@@ -17,7 +17,7 @@ import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.rasterfilters.actions.ShowLayerFiltersDialog;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
+import org.openstreetmap.josm.plugins.rasterfilters.preferences.FiltersDownloader;
 import org.openstreetmap.josm.plugins.rasterfilters.preferences.RasterFiltersPreferences;
 
 public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
@@ -33,8 +33,6 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 	@Override
 	public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
-		Main.debug("Initialising RasterFiltersPlugin in mapFrame!");
-
 		if (Main.isDisplayingMapView()) {
 			MapView.addLayerChangeListener(this);
 		}
@@ -56,8 +54,8 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 		if (filterButton == null) {
 
 			// filter reading and adding to the collections of
-			// FilterInitializer
-			FilterInitializer.initFilters();
+			// FilterDownloader
+			FiltersDownloader.initFilters();
 
 			LayerListDialog dialog = Main.map
 					.getToggleDialog(LayerListDialog.class);
@@ -103,7 +101,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 			Container container = filterButton.getParent();
 			container.remove(filterButton);
-			FilterInitializer.destroyFilters();
+			FiltersDownloader.destroyFilters();
 			filterButton = null;
 
 		}

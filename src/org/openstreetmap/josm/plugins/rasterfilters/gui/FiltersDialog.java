@@ -22,8 +22,8 @@ import javax.swing.border.EmptyBorder;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.rasterfilters.model.FilterInitializer;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
+import org.openstreetmap.josm.plugins.rasterfilters.preferences.FiltersDownloader;
 
 public class FiltersDialog {
 
@@ -117,7 +117,7 @@ public class FiltersDialog {
 					BoxLayout.X_AXIS));
 			chooseFilterPanel.setBackground(Color.white);
 
-			Set<String> filterTitles = FilterInitializer.filterTitles;
+			Set<String> filterTitles = FiltersDownloader.filterTitles;
 
 			listModel = new DefaultComboBoxModel<String>();
 			for (String temp : filterTitles) {
@@ -142,7 +142,7 @@ public class FiltersDialog {
 			addButton.addActionListener(new AddFilterToPanelListener());
 
 			// check if there is no meta information
-			if (FilterInitializer.filtersMeta.isEmpty()) {
+			if (FiltersDownloader.filtersMeta.isEmpty()) {
 				addButton.setEnabled(false);
 				filterChooser.setEnabled(false);
 			} else {

@@ -29,6 +29,7 @@ import org.openstreetmap.josm.plugins.rasterfilters.filters.Filter;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterGuiListener;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FilterPanel;
 import org.openstreetmap.josm.plugins.rasterfilters.gui.FiltersDialog;
+import org.openstreetmap.josm.plugins.rasterfilters.preferences.FiltersDownloader;
 
 import com.bric.swing.ColorPicker;
 
@@ -68,7 +69,7 @@ ActionListener, ItemListener {
 
 		try {
 
-			clazz = FilterInitializer.loader.loadClass(filterState
+			clazz = FiltersDownloader.loader.loadClass(filterState
 					.getFilterClassName());
 			filter = (Filter) clazz.newInstance();
 
@@ -157,7 +158,7 @@ ActionListener, ItemListener {
 
 	public JPanel createPanelByTitle(String title) {
 
-		for (JsonObject json : FilterInitializer.filtersMeta) {
+		for (JsonObject json : FiltersDownloader.filtersMeta) {
 
 			if (json.getString("title").equals(title)) {
 				return createFilterWithPanel(json);

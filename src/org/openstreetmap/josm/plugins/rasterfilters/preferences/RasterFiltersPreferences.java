@@ -23,7 +23,8 @@ import org.openstreetmap.josm.tools.GBC;
 
 public class RasterFiltersPreferences implements SubPreferenceSetting {
 
-	private FiltersListDownloader downloader = new FiltersListDownloader();
+	private FiltersDownloader downloader = new FiltersDownloader();
+
 	@Override
 	public void addGui(PreferenceTabbedPane gui) {
 		JPanel holder = new JPanel();
@@ -41,7 +42,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 				TableModel model = (TableModel) e.getSource();
 				String columnName = model.getColumnName(col);
 
-				if (columnName.equals("Downloaded")) {
+				if (columnName.equals("")) {
 
 					Boolean isDownloadedUpdate = (Boolean) model.getValueAt(row, col);
 					List<FilterInfo> filtersList = ((FiltersTableModel) model).filtersList;
@@ -54,6 +55,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		JTable table = new JTable(model);
 		table.getTableHeader().setReorderingAllowed(false);
+		table.getColumnModel().getColumn(2).setMaxWidth(20);
 		JScrollPane pane = new JScrollPane(table);
 
 		holder.add(pane, GBC.eol().fill(GBC.BOTH));
@@ -62,6 +64,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 		c.anchor = GBC.EAST;
 
 		JButton download = new JButton("Download");
+		download.addActionListener(downloader);
 		holder.add(download, c);
 
 		MapPreference pref = gui.getMapPreference();
@@ -87,14 +90,14 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 	class FiltersTableModel extends AbstractTableModel {
 
-		String[] columnNames = { "Filter Name", "Description", "Downloaded" };
+		String[] columnNames = { "Filter Name", "Description", "" };
 		Class[] columnClasses = { String.class, String.class, Boolean.class };
 		List<FilterInfo> filtersList;
 		Object[][] data;
 
 		public FiltersTableModel() {
 
-			filtersList = downloader.downloadFilters();
+			filtersList = downloader.downloadFiltersInfoList();
 			data = new Object[filtersList.size()][3];
 
 			for (int i = 0; i < filtersList.size(); i++) {

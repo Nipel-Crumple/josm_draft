@@ -1,43 +1,18 @@
 package org.openstreetmap.josm.plugins.rasterfilters.model;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-
-import org.openstreetmap.josm.plugins.rasterfilters.io.FiltersDownloader;
 
 public class FilterInitializer {
-
-	public static Map<String, JsonObject> filtersWithMeta = new HashMap<>();
+/*
 	public static Set<String> filterTitles = new TreeSet<>();
+	public static List<JsonObject> filtersMeta = FiltersInfoListDownloader.filtersMeta;
 	public static Set<URL> urls = new HashSet<>();
-	public static List<JsonObject> filtersMeta;
 	public static ClassLoader loader;
-	private static FiltersDownloader fr;
 
 	public static void initFilters() {
-
-		String dir = "plugins/rasterfilters/meta-inf";
-
-		// reading metainf from file
-		fr = new FiltersDownloader();
-
-		filtersMeta = fr.loadMetaInf(dir);
 
 		for (JsonObject json : filtersMeta) {
 
 			filterTitles.add(json.getString("title"));
-			filtersWithMeta.put(json.getString("name"), json);
 
 			JsonArray binaries = json.getJsonArray("binaries");
 
@@ -64,9 +39,8 @@ public class FilterInitializer {
 	}
 
 	public static void destroyFilters() {
-		filtersWithMeta.clear();
 		filterTitles.clear();
 		urls.clear();
-		filtersMeta.clear();
-	}
+		FiltersInfoListDownloader.filtersMeta.clear();
+	}*/
 }
