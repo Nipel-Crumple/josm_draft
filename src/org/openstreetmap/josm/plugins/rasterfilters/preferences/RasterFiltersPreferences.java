@@ -110,7 +110,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		public FiltersTableModel() {
 
-			filtersInfoList = downloader.downloadFiltersInfoList();
+			filtersInfoList = FiltersDownloader.downloadFiltersInfoList();
 			data = new Object[filtersInfoList.size()][3];
 
 			for (int i = 0; i < filtersInfoList.size(); i++) {
@@ -233,5 +233,18 @@ class FilterInfo {
 	public String toString() {
 		return "name: " + getName() + "\nDescription: " + getDescription()
 				+ "\nMeta: " + getMeta();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof FilterInfo) {
+			if (name.equals(((FilterInfo) o).getName()) &&
+					meta.equals(((FilterInfo) o).getMeta()) &&
+					description.equals(((FilterInfo) o).getDescription())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

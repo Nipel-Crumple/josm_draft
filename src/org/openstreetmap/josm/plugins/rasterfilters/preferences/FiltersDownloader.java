@@ -50,12 +50,10 @@ public class FiltersDownloader implements ActionListener {
 	public static ClassLoader loader;
 	public static Map<String, String> urlsMap = new HashMap<>();
 
-	private Set<JsonObject> filtersMetaToLoad = new HashSet<>();
-	List<FilterInfo> filtersInfoList = new ArrayList<>();
+	private static Set<JsonObject> filtersMetaToLoad = new HashSet<>();
+	static List<FilterInfo> filtersInfoList = new ArrayList<>();
 
-	public List<FilterInfo> downloadFiltersInfoList() {
-
-		filtersInfoList.clear();
+	public static List<FilterInfo> downloadFiltersInfoList() {
 
 		JsonObject jsonRequest = Json
 				.createObjectBuilder()
@@ -110,7 +108,8 @@ public class FiltersDownloader implements ActionListener {
 
 						JsonObject meta = loadMeta(link);
 
-						String paramName = "rasterfilters." + meta.getString("name");
+						String paramName = "rasterfilters."
+								+ meta.getString("name");
 
 						boolean needToLoad = Main.pref.getBoolean(paramName);
 
@@ -122,9 +121,12 @@ public class FiltersDownloader implements ActionListener {
 								loadBinaryToFile(binaries.getString(i));
 							}
 						}
+						FilterInfo newFilterInfo = new FilterInfo(name,
+								description, meta, needToLoad);
 
-						filtersInfoList.add(new FilterInfo(name, description, meta,
-								needToLoad));
+						if (!filtersInfoList.contains(newFilterInfo)) {
+							filtersInfoList.add(newFilterInfo);
+						}
 					}
 				}
 
@@ -135,6 +137,8 @@ public class FiltersDownloader implements ActionListener {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
+		loadBinariesFromMeta(filtersMetaToLoad);
 
 		return filtersInfoList;
 	}
@@ -207,40 +211,40 @@ public class FiltersDownloader implements ActionListener {
 	}
 
 	public static void initFilters() {
-		File file = new File(pluginDir + "urls.map");
+		File file = new File(pluginDir + "\\urls.map");
+		Main.debug("EXIST FILE? " + file.exists());
 
-		if (file.exists()) {
-			try {
-				FileReader fileReader = new FileReader(file);
-				BufferedReader br = new BufferedReader(fileReader);
+		try {
+			FileReader fileReader = new FileReader(file);
+			BufferedReader br = new BufferedReader(fileReader);
 
-				String temp = null;
+			String temp = null;
 
-				while ((temp = br.readLine()) != null) {
-					String[] mapEntry = temp.split("\\t");
-					File fileUrl = new File(mapEntry[1]);
-					if (fileUrl.exists()) {
-						URL url;
-						try {
-							url = new URL("jar", "", fileUrl.toURI().toURL() + "!/");
-							Main.debug("binaryUrl: " + url.toString());
-							binariesLocalUrls.add(url);
-						} catch (MalformedURLException e) {
-							Main.debug("Initializing filters with unknown protocol. \n"
-									+ e.getMessage());
-						}
+			while ((temp = br.readLine()) != null) {
+				String[] mapEntry = temp.split("\\t");
+				File fileUrl = new File(mapEntry[1]);
+				if (fileUrl.exists()) {
+					URL url;
+					try {
+						url = new URL("jar", "", fileUrl.toURI().toURL() + "!/");
+						Main.debug("binaryUrl: " + url.toString());
+						binariesLocalUrls.add(url);
+					} catch (MalformedURLException e) {
+						Main.debug("Initializing filters with unknown protocol. \n"
+								+ e.getMessage());
 					}
 				}
-
-				br.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		Main.debug("BinariesLocal : " + binariesLocalUrls.toString());
 
-		loader = new URLClassLoader(binariesLocalUrls.toArray(new URL[binariesLocalUrls.size()]),
+		loader = new URLClassLoader(
+				binariesLocalUrls.toArray(new URL[binariesLocalUrls.size()]),
 				FiltersDownloader.class.getClassLoader());
 	}
 
@@ -253,26 +257,28 @@ public class FiltersDownloader implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-	    for (FilterInfo temp : filtersInfoList) {
-	    	if (temp.isNeedToDownload()) {
+		for (FilterInfo temp : filtersInfoList) {
+			if (temp.isNeedToDownload()) {
 
-	    		if (!filtersMetaToLoad.contains(temp.getMeta())) {
-	    			filtersMetaToLoad.add(temp.getMeta());
-	    		}
+				if (!filtersMetaToLoad.contains(temp.getMeta())) {
+					filtersMetaToLoad.add(temp.getMeta());
+				}
 
-	    		filterTitles.add(temp.getMeta().getString("title"));
-	    	} else {
-	    		filterTitles.remove(temp.getMeta().getString("title"));
-	    	}
-	    }
+				filterTitles.add(temp.getMeta().getString("title"));
+			} else {
+				filterTitles.remove(temp.getMeta().getString("title"));
+			}
+		}
 
 		loadBinariesFromMeta(filtersMetaToLoad);
 
 		filtersMetaToLoad.clear();
 	}
 
-	public void loadBinariesFromMeta(Set<JsonObject> metaList) {
-		File file = new File(pluginDir + "urls.map");
+	public static void loadBinariesFromMeta(Set<JsonObject> metaList) {
+
+		File file = new File(pluginDir + "\\urls.map");
+
 		FileWriter fileWriter = null;
 		BufferedWriter writer = null;
 		try {
@@ -312,9 +318,9 @@ public class FiltersDownloader implements ActionListener {
 		pluginDir = dir;
 	}
 
-	public String loadBinaryToFile(String fromUrl) {
+	public static String loadBinaryToFile(String fromUrl) {
 
-		Main.debug("Need to load binary from " + fromUrl);
+		// Main.debug("Need to load binary from " + fromUrl);
 
 		URL url = null;
 		URLConnection con = null;
@@ -327,11 +333,12 @@ public class FiltersDownloader implements ActionListener {
 		if (m.find()) {
 
 			File plugin = new File(pluginDir);
+			if (plugin.exists()) {
 
-			String plugDir = plugin.getParent();
+				String plugDir = plugin.getAbsolutePath();
+				localFile = plugDir + "\\" + fromUrl.substring(m.end());
 
-			localFile = plugDir + "\\"
-					+ fromUrl.substring(m.end());
+			}
 		}
 
 		try {
@@ -341,12 +348,14 @@ public class FiltersDownloader implements ActionListener {
 
 			if (file.exists()) {
 				Main.debug("File " + localFile + " already exists");
+
 				return localFile;
 			} else {
 
 				BufferedInputStream in = new BufferedInputStream(
 						con.getInputStream());
-				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+				BufferedOutputStream out = new BufferedOutputStream(
+						new FileOutputStream(file));
 				int i;
 
 				while ((i = in.read()) != -1) {
@@ -356,6 +365,7 @@ public class FiltersDownloader implements ActionListener {
 				out.flush();
 				out.close();
 				in.close();
+
 				return localFile;
 			}
 		} catch (MalformedURLException e1) {

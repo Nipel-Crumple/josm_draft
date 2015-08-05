@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
@@ -94,7 +93,7 @@ public class FiltersDialog {
 			filterChooser.setModel(listModel);
 			filterChooser.revalidate();
 			frame.setVisible(true);
-			return frame;
+
 		} else {
 
 			frame = new JFrame();
@@ -141,24 +140,21 @@ public class FiltersDialog {
 			// empty space area between select and add button
 			chooseFilterPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-			if (listModel.getSize() == 0) {
-				Main.debug("No metaINF");
-			}
-
 			addButton = new JButton();
 			addButton.setText("add");
 			addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 			addButton.setMaximumSize(new Dimension(90, 30));
 			addButton.addActionListener(new AddFilterToPanelListener());
-
-			// check if there is no meta information
-			if (FiltersDownloader.filtersMeta.isEmpty()) {
-				addButton.setEnabled(false);
-				filterChooser.setEnabled(false);
-			} else {
-				addButton.setEnabled(true);
-				filterChooser.setEnabled(true);
-			}
+//
+//			// check if there is no meta information
+//			Main.debug("Empty " + String.valueOf(FiltersDownloader.filterTitles.isEmpty()));
+//			if (FiltersDownloader.filterTitles.isEmpty() || listModel.getSize() == 0) {
+//				addButton.setEnabled(false);
+//				filterChooser.setEnabled(false);
+//			} else {
+//				addButton.setEnabled(true);
+//				filterChooser.setEnabled(true);
+//			}
 
 			chooseFilterPanel.add(getAddButton());
 
@@ -171,9 +167,18 @@ public class FiltersDialog {
 			frame.setContentPane(pane);
 			frame.pack();
 			frame.setVisible(true);
-
-			return frame;
 		}
+
+
+		if (FiltersDownloader.filterTitles.isEmpty() || listModel.getSize() == 0) {
+			addButton.setEnabled(false);
+			filterChooser.setEnabled(false);
+		} else {
+			addButton.setEnabled(true);
+			filterChooser.setEnabled(true);
+		}
+
+		return frame;
 	}
 
 	public FiltersManager createFilterManager() {

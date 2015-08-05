@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.rasterfilters;
 
 import java.awt.Container;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JPanel;
 
@@ -29,6 +31,20 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 	public RasterFiltersPlugin(PluginInformation info) {
 		super(info);
 		Main.debug("Loading RasterFiltersPlugin");
+
+		File file = new File(getPluginDir());
+		if (file.mkdir()) {
+			file = new File(file.getAbsoluteFile() + "\\urls.map");
+			if (!file.exists()) {
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
 		FiltersDownloader.setPluginDir(getPluginDir());
 	}
 
@@ -56,6 +72,7 @@ public class RasterFiltersPlugin extends Plugin implements LayerChangeListener {
 
 			// filter reading and adding to the collections of
 			// FilterDownloader
+			FiltersDownloader.downloadFiltersInfoList();
 			FiltersDownloader.initFilters();
 
 			LayerListDialog dialog = Main.map
