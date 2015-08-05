@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.Box;
@@ -31,7 +32,8 @@ public class FiltersDialog {
 	private JComboBox<String> filterChooser;
 	private JPanel pane;
 	private JButton addButton;
-	private DefaultComboBoxModel<String> listModel;
+	private DefaultComboBoxModel<String> listModel = new DefaultComboBoxModel<String>();
+	private Set<String> showedFiltersTitles = new HashSet<>();
 	private JPanel filterContainer;
 	private Layer layer;
 	private FiltersManager filtersManager;
@@ -75,7 +77,22 @@ public class FiltersDialog {
 	}
 
 	public JFrame createAndShowGUI() throws MalformedURLException {
+		listModel.removeAllElements();
+
+		Set<String> filterTitles = FiltersDownloader.filterTitles;
+
+		for (String temp : filterTitles) {
+
+			if (!showedFiltersTitles.contains(temp)) {
+				listModel.addElement(temp);
+			}
+
+		}
+
 		if (frame != null) {
+
+			filterChooser.setModel(listModel);
+			filterChooser.revalidate();
 			frame.setVisible(true);
 			return frame;
 		} else {
@@ -116,13 +133,6 @@ public class FiltersDialog {
 			chooseFilterPanel.setLayout(new BoxLayout(chooseFilterPanel,
 					BoxLayout.X_AXIS));
 			chooseFilterPanel.setBackground(Color.white);
-
-			Set<String> filterTitles = FiltersDownloader.filterTitles;
-
-			listModel = new DefaultComboBoxModel<String>();
-			for (String temp : filterTitles) {
-				listModel.addElement(temp);
-			}
 
 			filterChooser = new JComboBox<>(getListModel());
 			filterChooser.setMaximumSize(new Dimension(200, 30));
@@ -214,11 +224,16 @@ public class FiltersDialog {
 			}
 
 			listModel.removeElement(title);
+			showedFiltersTitles.add(title);
 
 			if (listModel.getSize() == 0) {
 				addButton.setEnabled(false);
 			}
 
 		}
+	}
+
+	public Set<String> getShowedFiltersTitles() {
+		return showedFiltersTitles;
 	}
 }

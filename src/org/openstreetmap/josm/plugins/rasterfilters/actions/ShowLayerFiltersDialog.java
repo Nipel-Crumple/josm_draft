@@ -56,7 +56,6 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
 						temp.createAndShowGUI();
 
 					} catch (MalformedURLException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 

@@ -68,7 +68,7 @@ ActionListener, ItemListener {
 		Filter filter = null;
 
 		try {
-
+			Main.debug("ClassName for loading " + filterState.getFilterClassName());
 			clazz = FiltersDownloader.loader.loadClass(filterState
 					.getFilterClassName());
 			filter = (Filter) clazz.newInstance();
@@ -205,6 +205,8 @@ ActionListener, ItemListener {
 
 		// removing filter from the filters chain
 		filtersMap.remove(filterId);
+
+		dialog.getShowedFiltersTitles().remove(filterPanel.getName());
 
 		// add filterTitle to the 'choose list' on the top
 		dialog.getListModel().addElement(filterPanel.getName());

@@ -15,6 +15,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.preferences.PreferenceTabbedPane;
 import org.openstreetmap.josm.gui.preferences.SubPreferenceSetting;
 import org.openstreetmap.josm.gui.preferences.TabPreferenceSetting;
@@ -24,53 +25,68 @@ import org.openstreetmap.josm.tools.GBC;
 public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 	private FiltersDownloader downloader = new FiltersDownloader();
+	AbstractTableModel model;
+	JPanel holder;
 
 	@Override
 	public void addGui(PreferenceTabbedPane gui) {
-		JPanel holder = new JPanel();
-		holder.setLayout(new GridBagLayout());
 
-		holder.setBorder(new EmptyBorder(10, 10, 10, 10));
+		model = new FiltersTableModel();
 
-		AbstractTableModel model = new FiltersTableModel();
-		model.addTableModelListener(new TableModelListener() {
+		if (holder == null) {
+			holder = new JPanel();
+			holder.setLayout(new GridBagLayout());
 
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				int row = e.getFirstRow();
-				int col = e.getColumn();
-				TableModel model = (TableModel) e.getSource();
+			holder.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-				Boolean isDownloadedUpdate = (Boolean) model.getValueAt(row,
-						col);
-				List<FilterInfo> filtersList = ((FiltersTableModel) model).filtersInfoList;
+			model.addTableModelListener(new TableModelListener() {
 
-				filtersList.get(row).setNeedToDownload(isDownloadedUpdate);
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					int row = e.getFirstRow();
+					int col = e.getColumn();
+					TableModel model = (TableModel) e.getSource();
 
-			}
-		});
+					Boolean isDownloadedUpdate = (Boolean) model.getValueAt(
+							row, col);
+					List<FilterInfo> filtersList = ((FiltersTableModel) model).filtersInfoList;
 
-		JTable table = new JTable(model);
-		table.getTableHeader().setReorderingAllowed(false);
-		table.getColumnModel().getColumn(2).setMaxWidth(20);
-		JScrollPane pane = new JScrollPane(table);
+					filtersList.get(row).setNeedToDownload(isDownloadedUpdate);
 
-		holder.add(pane, GBC.eol().fill(GBC.BOTH));
+				}
+			});
 
-		GridBagConstraints c = GBC.eol();
-		c.anchor = GBC.EAST;
+			JTable table = new JTable(model);
+			table.getTableHeader().setReorderingAllowed(false);
+			table.getColumnModel().getColumn(2).setMaxWidth(20);
+			JScrollPane pane = new JScrollPane(table);
 
-		JButton download = new JButton("Download");
-		download.addActionListener(downloader);
-		holder.add(download, c);
+			holder.add(pane, GBC.eol().fill(GBC.BOTH));
+
+			GridBagConstraints c = GBC.eol();
+			c.anchor = GBC.EAST;
+
+			JButton download = new JButton("Download");
+			download.addActionListener(downloader);
+			holder.add(download, c);
+		}
 
 		MapPreference pref = gui.getMapPreference();
 		pref.addSubTab(this, "Image Filters", holder);
+
 	}
 
 	@Override
 	public boolean ok() {
-		// TODO Auto-generated method stub
+		List<FilterInfo> filtersInfoList = ((FiltersTableModel) model).getFiltersInfoList();
+
+		for (FilterInfo temp : filtersInfoList) {
+			JsonObject meta = temp.getMeta();
+			String paramName = meta.getString("name");
+			paramName = "rasterfilters." + paramName;
+			Main.pref.put(paramName, temp.isNeedToDownload());
+		}
+
 		return false;
 	}
 
@@ -89,7 +105,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		String[] columnNames = { "Filter Name", "Description", "" };
 		Class[] columnClasses = { String.class, String.class, Boolean.class };
-		public List<FilterInfo> filtersInfoList;
+		List<FilterInfo> filtersInfoList;
 		Object[][] data;
 
 		public FiltersTableModel() {
@@ -156,7 +172,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 			}
 		}
 
-		public List<FilterInfo> getFiltersList() {
+		public List<FilterInfo> getFiltersInfoList() {
 			return filtersInfoList;
 		}
 	}
