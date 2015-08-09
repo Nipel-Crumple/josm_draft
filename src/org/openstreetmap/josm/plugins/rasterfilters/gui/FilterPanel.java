@@ -160,11 +160,11 @@ public class FilterPanel extends JPanel {
 	}
 
 	private JButton createRemoveButton(ActionListener listener) {
-		JButton removeButton = new JButton("Delete");
+		JButton removeButton = new JButton("Remove");
 		Font font = new Font("Arial", Font.PLAIN, 12);
 
 		removeButton.setFont(font);
-		removeButton.setName("delete");
+		removeButton.setName("remove");
 
 		removeButton.addActionListener(listener);
 

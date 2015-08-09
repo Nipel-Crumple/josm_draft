@@ -30,7 +30,7 @@ public final class ShowLayerFiltersDialog extends AbstractAction implements Laye
 	 */
 	public ShowLayerFiltersDialog() {
 		putValue(NAME, tr("Filters"));
-		putValue(SHORT_DESCRIPTION, tr("Choose filter"));
+		putValue(SHORT_DESCRIPTION, tr("Choose Filter"));
 		putValue(SMALL_ICON, ImageProvider.get("josm_filters_48.png"));
 	}
 

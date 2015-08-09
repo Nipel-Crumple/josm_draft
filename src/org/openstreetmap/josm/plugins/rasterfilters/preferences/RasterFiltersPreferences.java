@@ -58,7 +58,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 			JTable table = new JTable(model);
 			table.getTableHeader().setReorderingAllowed(false);
-			table.getColumnModel().getColumn(2).setMaxWidth(20);
+			table.getColumnModel().getColumn(3).setMaxWidth(20);
 			JScrollPane pane = new JScrollPane(table);
 
 			holder.add(pane, GBC.eol().fill(GBC.BOTH));
@@ -103,20 +103,21 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 	class FiltersTableModel extends AbstractTableModel {
 
-		String[] columnNames = { "Filter Name", "Description", "" };
-		Class[] columnClasses = { String.class, String.class, Boolean.class };
+		String[] columnNames = { "Filter Name", "Author", "Description", "" };
+		Class[] columnClasses = { String.class, String.class, String.class, Boolean.class };
 		List<FilterInfo> filtersInfoList;
 		Object[][] data;
 
 		public FiltersTableModel() {
 
 			filtersInfoList = FiltersDownloader.downloadFiltersInfoList();
-			data = new Object[filtersInfoList.size()][3];
+			data = new Object[filtersInfoList.size()][4];
 
 			for (int i = 0; i < filtersInfoList.size(); i++) {
 				data[i][0] = filtersInfoList.get(i).getName();
-				data[i][1] = filtersInfoList.get(i).getDescription();
-				data[i][2] = filtersInfoList.get(i).isNeedToDownload();
+				data[i][1] = filtersInfoList.get(i).getOwner();
+				data[i][2] = filtersInfoList.get(i).getDescription();
+				data[i][3] = filtersInfoList.get(i).isNeedToDownload();
 			}
 
 		}
@@ -137,8 +138,10 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 			case 0:
 				return filtersInfoList.get(rowIndex).getName();
 			case 1:
-				return filtersInfoList.get(rowIndex).getDescription();
+				return filtersInfoList.get(rowIndex).getOwner();
 			case 2:
+				return filtersInfoList.get(rowIndex).getDescription();
+			case 3:
 				return filtersInfoList.get(rowIndex).isNeedToDownload();
 			default:
 				return null;
@@ -157,7 +160,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		@Override
 		public boolean isCellEditable(int row, int col) {
-			if (col == 2) {
+			if (col == 3) {
 				return true;
 			}
 
@@ -166,7 +169,7 @@ public class RasterFiltersPreferences implements SubPreferenceSetting {
 
 		@Override
 		public void setValueAt(Object value, int row, int col) {
-			if (col == 2) {
+			if (col == 3) {
 				filtersInfoList.get(row).setNeedToDownload((boolean) value);
 				fireTableCellUpdated(row, col);
 			}
@@ -184,6 +187,7 @@ class FilterInfo {
 	private String description;
 	private JsonObject meta;
 	private boolean needToDownload;
+	private String owner;
 
 	public FilterInfo() {
 
@@ -227,6 +231,14 @@ class FilterInfo {
 
 	public void setNeedToDownload(boolean needToDownload) {
 		this.needToDownload = needToDownload;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 
 	@Override

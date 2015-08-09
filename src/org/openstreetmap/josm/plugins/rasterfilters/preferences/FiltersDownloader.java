@@ -99,9 +99,9 @@ public class FiltersDownloader implements ActionListener {
 
 					Elements elems = element.getElementsByTag("td");
 					if (!elems.isEmpty()) {
-						String name = elems.get(0).getElementsByTag("a")
-								.first().ownText();
-						String description = elems.get(1).ownText();
+						String name = elems.get(0).text();
+						String owner = elems.get(1).text();
+						String description = elems.get(2).text();
 
 						String link = elems.get(0).getElementsByTag("a")
 								.attr("href");
@@ -123,6 +123,7 @@ public class FiltersDownloader implements ActionListener {
 						}
 						FilterInfo newFilterInfo = new FilterInfo(name,
 								description, meta, needToLoad);
+						newFilterInfo.setOwner(owner);
 
 						if (!filtersInfoList.contains(newFilterInfo)) {
 							filtersInfoList.add(newFilterInfo);

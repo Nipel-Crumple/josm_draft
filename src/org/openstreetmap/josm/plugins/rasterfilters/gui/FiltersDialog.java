@@ -205,6 +205,10 @@ public class FiltersDialog {
 		return listModel;
 	}
 
+	public JComboBox<String> getFilterChooser() {
+		return filterChooser;
+	}
+
 	public JButton getAddButton() {
 		return addButton;
 	}
@@ -232,6 +236,7 @@ public class FiltersDialog {
 			showedFiltersTitles.add(title);
 
 			if (listModel.getSize() == 0) {
+				filterChooser.setEnabled(false);
 				addButton.setEnabled(false);
 			}
 

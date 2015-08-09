@@ -230,6 +230,7 @@ ActionListener, ItemListener {
 		// but then it appeared
 		// button should be enabled
 		if (!dialog.getAddButton().isEnabled()) {
+			dialog.getFilterChooser().setEnabled(true);
 			dialog.getAddButton().setEnabled(true);
 		}
 
