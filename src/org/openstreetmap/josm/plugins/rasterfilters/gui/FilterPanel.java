@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.rasterfilters.gui;
 
+import static org.openstreetmap.josm.tools.I18n.tr;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -21,15 +23,25 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.rasterfilters.model.FiltersManager;
 
 import com.bric.swing.ColorPicker;
 
+/**
+ * FilterPanel is usual JPanel with its
+ * own GUI elements which is added according to
+ * meta-information of filter.
+ *
+ * @author Nipel-Crumple
+ *
+ */
 public class FilterPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -42,6 +54,14 @@ public class FilterPanel extends JPanel {
 		setBackground(Color.white);
 	}
 
+	/**
+	 * Methods adds GUI element on filter's panel according to meta-information and
+	 * automatically resizes the given filter's panel.
+	 *
+	 * @param json filter's meta-information
+	 *
+	 * @return added GUI element
+	 */
 	public JComponent addGuiElement(JsonObject json) {
 		String type = json.getString("type");
 
@@ -56,6 +76,7 @@ public class FilterPanel extends JPanel {
 			setNeededHeight(getNeededHeight() + 30);
 
 			JCheckBox checkBox = createCheckBox(json.getString("title"));
+			checkBox.setSelected(json.getBoolean("default"));
 			checkBox.setName(json.getString("name"));
 
 			return checkBox;
@@ -226,18 +247,32 @@ public class FilterPanel extends JPanel {
 			int maxValue = array.getInt(1);
 			int initValue = json.getInt("default");
 
-			slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue,
-					initValue);
-			slider.setName(json.getString("name"));
-			slider.setToolTipText(String.valueOf(slider.getValue()));
-			slider.setMinorTickSpacing(maxValue / 4);
-			// slider.setMajorTickSpacing(maxValue / 4);
+			try {
+				slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue,
+						initValue);
+				slider.setName(json.getString("name"));
+				slider.setToolTipText(String.valueOf(slider.getValue()));
+				slider.setMinorTickSpacing(maxValue / 4);
+			} catch(IllegalArgumentException e) {
+
+				 JOptionPane.showMessageDialog(
+						 Main.parent,
+						 tr("JSlider initialization error. Make sure your meta-inf is correct."),
+						 tr("Error"),
+						 JOptionPane.ERROR_MESSAGE);
+			}
 
 		} else if (valueType.equals("float")) {
 
 			// every value is supplied by 10 to be integer for slider
-			int minValue = array.getInt(0) * 100;
-			int maxValue = array.getInt(1) * 100;
+			double minValueDouble = array.getJsonNumber(0).doubleValue();
+			double maxValueDouble = array.getJsonNumber(1).doubleValue();
+			Main.debug("DminValue: " + String.valueOf(minValueDouble) +
+					"DmaxValue: " + String.valueOf(maxValueDouble));
+
+			int minValue = (int) (minValueDouble * 100);
+			int maxValue = (int) (maxValueDouble * 100);
+
 
 			double initValue = json.getJsonNumber("default").doubleValue() * 100;
 			double delta = (maxValue - minValue) / 100;
@@ -252,24 +287,28 @@ public class FilterPanel extends JPanel {
 				}
 			}
 
-			slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue,
-					new Double(initValue).intValue());
-			slider.setMinorTickSpacing(maxValue / 4);
-			slider.setName(json.getString("name"));
-			slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
+			try {
 
+				slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue,
+						new Double(initValue).intValue());
+				slider.setMinorTickSpacing(maxValue / 4);
+				slider.setName(json.getString("name"));
+				slider.setToolTipText(String.valueOf((double) slider.getValue() / 100));
+				slider.setBackground(this.getBackground());
+				slider.setBorder(sliderBorder);
+				slider.setPaintTicks(true);
+				slider.setPaintLabels(true);
+				this.add(slider);
+
+			} catch (IllegalArgumentException e) {
+
+				 JOptionPane.showMessageDialog(
+						 Main.parent,
+						 tr("JSlider initialization error. Make sure your meta-inf is correct."),
+						 tr("Error"),
+						 JOptionPane.ERROR_MESSAGE);
+			}
 		}
-
-		// if (!labelTable.isEmpty()) {
-		// slider.setLabelTable(labelTable);
-		// }
-
-		slider.setBackground(this.getBackground());
-		slider.setBorder(sliderBorder);
-		slider.setPaintTicks(true);
-		slider.setPaintLabels(true);
-
-		this.add(slider);
 
 		return slider;
 	}
@@ -289,5 +328,4 @@ public class FilterPanel extends JPanel {
 	public void setNeededHeight(int neededHeight) {
 		this.neededHeight = neededHeight;
 	}
-
 }
